@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                   xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                   xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                   xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                   xmlns:flowable="http://flowable.org/bpmn"
+                   id="diagram_legal_contract_review"
+                   targetNamespace="http://flowable.org/bpmn">
+  <bpmn2:process id="legal_contract_review" name="法务合同审核" isExecutable="true">
+    <bpmn2:startEvent id="start" name="开始"/>
+    <!-- 解析与首轮 AI 在应用层 LegalContractPipelineService 完成，BPM 从「法务处置意见」开始 -->
+    <bpmn2:sequenceFlow id="flow_start_opinion" sourceRef="start" targetRef="opinionReview"/>
+    <bpmn2:userTask id="opinionReview" name="法务处置意见" flowable:candidateStrategy="36" flowable:candidateParam="">
+      <bpmn2:extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${legalContractTaskListener}"/>
+        <flowable:taskListener event="complete" delegateExpression="${legalContractTaskListener}"/>
+        <flowable:candidateStrategy>36</flowable:candidateStrategy>
+        <flowable:candidateParam/>
+      </bpmn2:extensionElements>
+    </bpmn2:userTask>
+    <bpmn2:sequenceFlow id="flow_opinion_gateway" sourceRef="opinionReview" targetRef="secondRoundGateway"/>
+    <bpmn2:exclusiveGateway id="secondRoundGateway" name="是否二轮"/>
+    <bpmn2:sequenceFlow id="flow_gateway_ai2" name="二轮" sourceRef="secondRoundGateway" targetRef="aiRound2Enqueue">
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression">${needSecondRound == true}</bpmn2:conditionExpression>
+    </bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="flow_gateway_director" name="跳过二轮" sourceRef="secondRoundGateway" targetRef="directorGateway">
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression">${needSecondRound != true}</bpmn2:conditionExpression>
+    </bpmn2:sequenceFlow>
+    <bpmn2:serviceTask id="aiRound2Enqueue" name="AI二轮入队" flowable:async="true" flowable:delegateExpression="${legalAiAuditDelegate}"/>
+    <bpmn2:sequenceFlow id="flow_ai2_enqueue_await" sourceRef="aiRound2Enqueue" targetRef="awaitAiRound2"/>
+    <bpmn2:receiveTask id="awaitAiRound2" name="等待AI二轮完成">
+      <bpmn2:extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${legalAiAuditReceiveListener}"/>
+      </bpmn2:extensionElements>
+    </bpmn2:receiveTask>
+    <bpmn2:sequenceFlow id="flow_await_review2" sourceRef="awaitAiRound2" targetRef="reviewRound2"/>
+    <bpmn2:userTask id="reviewRound2" name="复核二轮结果" flowable:candidateStrategy="36" flowable:candidateParam="">
+      <bpmn2:extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${legalContractTaskListener}"/>
+        <flowable:taskListener event="complete" delegateExpression="${legalContractTaskListener}"/>
+        <flowable:candidateStrategy>36</flowable:candidateStrategy>
+        <flowable:candidateParam/>
+      </bpmn2:extensionElements>
+    </bpmn2:userTask>
+    <bpmn2:sequenceFlow id="flow_review2_director" sourceRef="reviewRound2" targetRef="directorGateway"/>
+    <bpmn2:exclusiveGateway id="directorGateway" name="是否总监审批"/>
+    <bpmn2:sequenceFlow id="flow_dir_review" name="高风险" sourceRef="directorGateway" targetRef="directorReview">
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression">${riskHighCount != null &amp;&amp; riskHighCount &gt; 0}</bpmn2:conditionExpression>
+    </bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="flow_dir_finalize" name="无高风险" sourceRef="directorGateway" targetRef="finalize">
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression">${riskHighCount == null || riskHighCount == 0}</bpmn2:conditionExpression>
+    </bpmn2:sequenceFlow>
+    <bpmn2:userTask id="directorReview" name="法务总监确认" flowable:candidateStrategy="10" flowable:candidateParam="1">
+      <bpmn2:extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${legalContractTaskListener}"/>
+        <flowable:taskListener event="complete" delegateExpression="${legalContractTaskListener}"/>
+        <flowable:candidateStrategy>10</flowable:candidateStrategy>
+        <flowable:candidateParam>1</flowable:candidateParam>
+      </bpmn2:extensionElements>
+    </bpmn2:userTask>
+    <bpmn2:sequenceFlow id="flow_director_finalize" sourceRef="directorReview" targetRef="finalize"/>
+    <bpmn2:userTask id="finalize" name="人工收尾" flowable:candidateStrategy="36" flowable:candidateParam="">
+      <bpmn2:extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${legalContractTaskListener}"/>
+        <flowable:taskListener event="complete" delegateExpression="${legalContractTaskListener}"/>
+        <flowable:candidateStrategy>36</flowable:candidateStrategy>
+        <flowable:candidateParam/>
+      </bpmn2:extensionElements>
+    </bpmn2:userTask>
+    <bpmn2:sequenceFlow id="flow_finalize_export" sourceRef="finalize" targetRef="exportReport"/>
+    <bpmn2:serviceTask id="exportReport" name="导出归档" flowable:async="false" flowable:delegateExpression="${legalExportDelegate}"/>
+    <bpmn2:sequenceFlow id="flow_export_end" sourceRef="exportReport" targetRef="end"/>
+    <bpmn2:endEvent id="end" name="结束"/>
+  </bpmn2:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_legal_contract_review">
+    <bpmndi:BPMNPlane id="BPMNPlane_legal_contract_review" bpmnElement="legal_contract_review">
+      <bpmndi:BPMNShape id="BPMNShape_start" bpmnElement="start">
+        <dc:Bounds x="192" y="40" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_opinionReview" bpmnElement="opinionReview">
+        <dc:Bounds x="160" y="120" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_secondRoundGateway" bpmnElement="secondRoundGateway" isMarkerVisible="true">
+        <dc:Bounds x="185" y="240" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_aiRound2Enqueue" bpmnElement="aiRound2Enqueue">
+        <dc:Bounds x="380" y="225" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_awaitAiRound2" bpmnElement="awaitAiRound2">
+        <dc:Bounds x="380" y="320" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_reviewRound2" bpmnElement="reviewRound2">
+        <dc:Bounds x="380" y="345" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_directorGateway" bpmnElement="directorGateway" isMarkerVisible="true">
+        <dc:Bounds x="185" y="470" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_directorReview" bpmnElement="directorReview">
+        <dc:Bounds x="380" y="455" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_finalize" bpmnElement="finalize">
+        <dc:Bounds x="160" y="590" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_exportReport" bpmnElement="exportReport">
+        <dc:Bounds x="160" y="710" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_end" bpmnElement="end">
+        <dc:Bounds x="192" y="830" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_flow_start_opinion" bpmnElement="flow_start_opinion">
+        <di:waypoint x="210" y="76"/>
+        <di:waypoint x="210" y="120"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_flow_opinion_gateway" bpmnElement="flow_opinion_gateway">
+        <di:waypoint x="210" y="200"/>
+        <di:waypoint x="210" y="240"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_flow_gateway_ai2" bpmnElement="flow_gateway_ai2">
+        <di:waypoint x="235" y="265"/>
+        <di:waypoint x="380" y="265"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_flow_gateway_director" bpmnElement="flow_gateway_director">
+        <di:waypoint x="210" y="290"/>
+        <di:waypoint x="210" y="470"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_flow_ai2_enqueue_await" bpmnElement="flow_ai2_enqueue_await">
+        <di:waypoint x="430" y="305"/>
+        <di:waypoint x="430" y="300"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_flow_await_review2" bpmnElement="flow_await_review2">
+        <di:waypoint x="430" y="350"/>
+        <di:waypoint x="430" y="345"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_flow_review2_director" bpmnElement="flow_review2_director">
+        <di:waypoint x="430" y="425"/>
+        <di:waypoint x="430" y="495"/>
+        <di:waypoint x="235" y="495"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_flow_dir_review" bpmnElement="flow_dir_review">
+        <di:waypoint x="235" y="495"/>
+        <di:waypoint x="380" y="495"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_flow_dir_finalize" bpmnElement="flow_dir_finalize">
+        <di:waypoint x="210" y="520"/>
+        <di:waypoint x="210" y="590"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_flow_director_finalize" bpmnElement="flow_director_finalize">
+        <di:waypoint x="430" y="535"/>
+        <di:waypoint x="430" y="630"/>
+        <di:waypoint x="260" y="630"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_flow_finalize_export" bpmnElement="flow_finalize_export">
+        <di:waypoint x="210" y="670"/>
+        <di:waypoint x="210" y="710"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_flow_export_end" bpmnElement="flow_export_end">
+        <di:waypoint x="210" y="790"/>
+        <di:waypoint x="210" y="830"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn2:definitions>

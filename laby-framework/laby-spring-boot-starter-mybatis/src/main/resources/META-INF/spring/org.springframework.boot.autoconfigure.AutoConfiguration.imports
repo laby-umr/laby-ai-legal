@@ -1,0 +1,3 @@
+com.laby.framework.datasource.config.LabyDataSourceAutoConfiguration
+com.laby.framework.mybatis.config.LabyMybatisAutoConfiguration
+com.laby.framework.translate.config.LabyTranslateAutoConfiguration

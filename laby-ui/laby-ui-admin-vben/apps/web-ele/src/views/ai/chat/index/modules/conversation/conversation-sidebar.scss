@@ -1,0 +1,503 @@
+.conversation-aside {
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
+  width: 280px;
+  height: 100%;
+  min-height: 0;
+  transition: width 0.22s ease;
+}
+
+.conversation-aside.is-collapsed {
+  width: 52px;
+}
+
+.conversation-aside__toggle {
+  position: absolute;
+  top: 50%;
+  right: -12px;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 48px;
+  color: var(--el-text-color-regular);
+  cursor: pointer;
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 9999px;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 8%);
+  transform: translateY(-50%);
+  transition:
+    color 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.conversation-aside__toggle:hover {
+  color: var(--el-color-primary);
+  border-color: var(--el-color-primary-light-5);
+}
+
+.conversation-aside__rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  height: 100%;
+  padding: 14px 0;
+  overflow-y: auto;
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 5%);
+}
+
+.conversation-aside__rail-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  color: var(--el-text-color-regular);
+  cursor: pointer;
+  background: var(--el-fill-color-light);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 10px;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.conversation-aside__rail-btn:hover {
+  color: var(--el-color-primary);
+  background: var(--el-color-primary-light-9);
+  border-color: var(--el-color-primary-light-7);
+}
+
+.conversation-aside__rail-btn--primary {
+  color: #fff;
+  background: var(--el-color-primary);
+  border-color: var(--el-color-primary);
+}
+
+.conversation-aside__rail-btn--primary:hover {
+  color: #fff;
+  background: var(--el-color-primary-dark-2);
+  border-color: var(--el-color-primary-dark-2);
+}
+
+.conversation-aside__rail-divider {
+  width: 24px;
+  height: 1px;
+  margin: 4px 0;
+  background: var(--el-border-color-lighter);
+}
+
+.conversation-aside__rail-chat {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  cursor: pointer;
+  background: transparent;
+  border: 2px solid transparent;
+  border-radius: 999px;
+  transition: border-color 0.15s ease;
+}
+
+.conversation-aside__rail-chat.is-active {
+  border-color: var(--el-color-primary);
+}
+
+.conversation-aside__rail-chat-fallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  color: var(--el-color-primary);
+  background: var(--el-color-primary-light-9);
+  border-radius: 999px;
+}
+
+.conversation-sidebar {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  padding: 16px;
+  overflow: hidden;
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 5%);
+}
+
+.conversation-sidebar__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.conversation-sidebar__new-btn {
+  width: 100%;
+}
+
+.conversation-sidebar__role-btn {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 36px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--el-text-color-regular);
+  cursor: pointer;
+  background: var(--el-fill-color-light);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 10px;
+  transition:
+    color 0.18s ease,
+    border-color 0.18s ease,
+    background 0.18s ease;
+}
+
+.conversation-sidebar__role-btn:hover {
+  color: var(--el-color-primary);
+  background: var(--el-color-primary-light-9);
+  border-color: var(--el-color-primary-light-7);
+}
+
+.conversation-sidebar__search {
+  margin-bottom: 8px;
+}
+
+.conversation-sidebar__list {
+  flex: 1;
+  min-height: 0;
+  margin-top: 4px;
+  overflow: auto;
+}
+
+.conversation-sidebar__group-title {
+  padding: 8px 4px 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--el-text-color-placeholder);
+  letter-spacing: 0.04em;
+}
+
+.conversation-sidebar__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+  margin-bottom: 4px;
+  line-height: 40px;
+  cursor: pointer;
+  border-radius: 10px;
+  transition: background 0.15s ease;
+}
+
+.conversation-sidebar__item:hover {
+  background: var(--el-fill-color-light);
+}
+
+.conversation-sidebar__item.is-active {
+  background: color-mix(in srgb, var(--el-color-primary) 10%, transparent);
+}
+
+.conversation-sidebar__item-main {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  min-width: 0;
+}
+
+.conversation-sidebar__item-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--el-text-color-primary);
+  white-space: nowrap;
+}
+
+.conversation-sidebar__item-actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  color: var(--el-text-color-secondary);
+}
+
+.conversation-sidebar__footer {
+  flex-shrink: 0;
+  padding-top: 12px;
+  margin-top: 8px;
+  border-top: 1px dashed var(--el-border-color-lighter);
+}
+
+.conversation-sidebar__clear-btn {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 34px;
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+  cursor: pointer;
+  background: transparent;
+  border: 1px dashed var(--el-border-color);
+  border-radius: 10px;
+  transition:
+    color 0.18s ease,
+    border-color 0.18s ease,
+    background 0.18s ease;
+}
+
+.conversation-sidebar__clear-btn:hover {
+  color: var(--el-color-danger);
+  background: var(--el-color-danger-light-9);
+  border-color: var(--el-color-danger-light-5);
+}
+
+/* ========== 角色仓库（侧栏内嵌） ========== */
+
+.role-picker {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.role-picker__header {
+  flex-shrink: 0;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--el-border-color-extra-light);
+}
+
+.role-picker__back {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  padding: 0;
+  margin-bottom: 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--el-text-color-secondary);
+  cursor: pointer;
+  background: transparent;
+  border: none;
+}
+
+.role-picker__back:hover {
+  color: var(--el-color-primary);
+}
+
+.role-picker__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 650;
+  color: var(--el-text-color-primary);
+}
+
+.role-picker__subtitle {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+}
+
+.role-picker__toolbar {
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 0;
+}
+
+.role-picker__tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  padding: 3px;
+  background: var(--el-fill-color-light);
+  border-radius: 10px;
+}
+
+.role-picker__tab {
+  height: 30px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--el-text-color-secondary);
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.role-picker__tab.is-active {
+  color: var(--el-text-color-primary);
+  background: var(--el-bg-color);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 6%);
+}
+
+.role-picker__categories {
+  display: flex;
+  gap: 6px;
+  padding-bottom: 2px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.role-picker__categories::-webkit-scrollbar {
+  display: none;
+}
+
+.role-picker__category {
+  flex-shrink: 0;
+  height: 26px;
+  padding: 0 10px;
+  font-size: 11px;
+  color: var(--el-text-color-secondary);
+  cursor: pointer;
+  background: var(--el-fill-color-blank);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 999px;
+}
+
+.role-picker__category.is-active {
+  color: var(--el-color-primary);
+  background: var(--el-color-primary-light-9);
+  border-color: var(--el-color-primary-light-5);
+}
+
+.role-picker__add-btn {
+  align-self: flex-start;
+}
+
+.role-picker__list {
+  flex: 1;
+  min-height: 0;
+  padding-right: 2px;
+  overflow-y: auto;
+}
+
+.role-picker__item {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 6px;
+  text-align: left;
+  cursor: pointer;
+  background: var(--el-fill-color-blank);
+  border: 1px solid var(--el-border-color-extra-light);
+  border-radius: 12px;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease,
+    transform 0.15s ease;
+}
+
+.role-picker__item:hover:not(:disabled) {
+  background: var(--el-color-primary-light-9);
+  border-color: var(--el-color-primary-light-7);
+  transform: translateY(-1px);
+}
+
+.role-picker__item:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.role-picker__avatar {
+  flex-shrink: 0;
+}
+
+.role-picker__item-body {
+  min-width: 0;
+}
+
+.role-picker__item-head {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.role-picker__item-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+  white-space: nowrap;
+}
+
+.role-picker__item-tag {
+  flex-shrink: 0;
+  padding: 1px 6px;
+  font-size: 10px;
+  color: var(--el-color-primary);
+  background: var(--el-color-primary-light-9);
+  border-radius: 999px;
+}
+
+.role-picker__item-desc {
+  display: -webkit-box;
+  margin: 3px 0 0;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--el-text-color-secondary);
+  -webkit-box-orient: vertical;
+}
+
+.role-picker__item-actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+.role-picker__more {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  color: var(--el-text-color-secondary);
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+}
+
+.role-picker__more:hover {
+  color: var(--el-text-color-primary);
+  background: var(--el-fill-color-light);
+}
+
+.role-picker__arrow {
+  color: var(--el-text-color-placeholder);
+}
+
+.role-picker__loading {
+  padding: 8px 0 16px;
+  font-size: 12px;
+  color: var(--el-text-color-placeholder);
+  text-align: center;
+}

@@ -1,0 +1,7 @@
+com.laby.framework.apilog.config.LabyApiLogAutoConfiguration
+com.laby.framework.jackson.config.LabyJacksonAutoConfiguration
+com.laby.framework.swagger.config.LabySwaggerAutoConfiguration
+com.laby.framework.web.config.LabyWebAutoConfiguration
+com.laby.framework.xss.config.LabyXssAutoConfiguration
+com.laby.framework.banner.config.LabyBannerAutoConfiguration
+com.laby.framework.encrypt.config.LabyApiEncryptAutoConfiguration

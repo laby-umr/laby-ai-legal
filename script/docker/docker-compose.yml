@@ -1,0 +1,253 @@
+# Laby 本地/测试环境 — 统一基础设施编排
+#
+# 用法（在 script/docker 目录下）：
+#   docker compose --env-file docker.env up -d
+#
+# 仅启动基础中间件（不含后端/前端镜像构建）：
+#   docker compose --env-file docker.env up -d mysql redis qdrant rabbitmq onlyoffice parse-adapter
+#
+# 启动后端 + 管理端（需先 mvn package 构建镜像上下文）：
+#   docker compose --env-file docker.env --profile app up -d
+#
+# 额外启动 RocketMQ：
+#   docker compose --env-file docker.env --profile rocketmq up -d
+
+name: laby-system
+
+services:
+  # ==================== 数据库 ====================
+  mysql:
+    container_name: laby-mysql
+    image: mysql:8
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-laby-system}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-123456}
+      TZ: Asia/Shanghai
+    volumes:
+      - mysql:/var/lib/mysql
+      # 首次初始化库表（可选；若库已存在可注释掉下面两行）
+      - ../../sql/mysql/ruoyi-vue-pro.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+      - ../../sql/mysql/laby-init.sql:/docker-entrypoint-initdb.d/02-laby-init.sql:ro
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-p${MYSQL_ROOT_PASSWORD:-123456}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # ==================== 缓存 ====================
+  redis:
+    container_name: laby-redis
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # ==================== 向量库（AI 知识库） ====================
+  qdrant:
+    container_name: laby-qdrant
+    image: qdrant/qdrant:v1.13.2
+    restart: unless-stopped
+    ports:
+      - "${QDRANT_HTTP_PORT:-6333}:6333"
+      - "${QDRANT_GRPC_PORT:-6334}:6334"
+    volumes:
+      - qdrant:/qdrant/storage
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:6333/healthz"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  # ==================== 消息队列 RabbitMQ ====================
+  rabbitmq:
+    container_name: laby-rabbitmq
+    image: rabbitmq:3.13-management-alpine
+    restart: unless-stopped
+    ports:
+      - "${RABBITMQ_PORT:-5672}:5672"
+      - "${RABBITMQ_MGMT_PORT:-15672}:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-rabbit}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-rabbit}
+    volumes:
+      - rabbitmq:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  # ==================== 消息队列 RocketMQ（可选 profile: rocketmq） ====================
+  rocketmq-nameserver:
+    container_name: laby-rocketmq-nameserver
+    profiles: ["rocketmq"]
+    image: apache/rocketmq:5.2.0
+    restart: unless-stopped
+    ports:
+      - "${ROCKETMQ_NAMESERVER_PORT:-9876}:9876"
+    command: sh mqnamesrv
+    volumes:
+      - rocketmq_nameserver:/home/rocketmq/logs
+
+  rocketmq-broker:
+    container_name: laby-rocketmq-broker
+    profiles: ["rocketmq"]
+    image: apache/rocketmq:5.2.0
+    restart: unless-stopped
+    ports:
+      - "${ROCKETMQ_BROKER_PORT:-10911}:10911"
+    environment:
+      NAMESRV_ADDR: laby-rocketmq-nameserver:9876
+    command: sh mqbroker -n laby-rocketmq-nameserver:9876 --enable-proxy
+    depends_on:
+      - rocketmq-nameserver
+    volumes:
+      - rocketmq_broker:/home/rocketmq/store
+
+  # ==================== OnlyOffice 文档服务（法务预览/审阅） ====================
+  onlyoffice:
+    container_name: laby-onlyoffice
+    image: onlyoffice/documentserver:8.0
+    restart: unless-stopped
+    ports:
+      - "${ONLYOFFICE_PORT:-8088}:80"
+    environment:
+      JWT_ENABLED: "true"
+      JWT_SECRET: ${ONLYOFFICE_JWT_SECRET:-laby-onlyoffice-dev-secret-change-me}
+    volumes:
+      - onlyoffice_data:/var/www/onlyoffice/Data
+      - onlyoffice_logs:/var/log/onlyoffice
+      - ../../laby-module-legal/src/main/resources/onlyoffice-plugin/legal-locate-v2:/var/www/onlyoffice/documentserver/sdkjs-plugins/legal-locate-v2:ro
+
+  # ==================== PDF 解析适配层（知识库高质量 RAG） ====================
+  parse-adapter:
+    container_name: laby-parse-adapter
+    build:
+      context: ../../script/document-parse/laby-parse-adapter
+    image: laby-parse-adapter:1.0
+    restart: unless-stopped
+    ports:
+      - "${PARSE_ADAPTER_PORT:-8000}:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # ==================== Docling 解析适配层（Office/PDF 结构化 RAG） ====================
+  docling-adapter:
+    container_name: laby-docling-adapter
+    build:
+      context: ../../script/document-parse/laby-docling-adapter
+    image: laby-docling-adapter:1.0
+    restart: unless-stopped
+    ports:
+      - "${DOCLING_ADAPTER_PORT:-8001}:8001"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8001/health')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # ==================== 后端 API（可选 profile: app） ====================
+  server:
+    container_name: laby-server
+    profiles: ["app"]
+    build:
+      context: ../../laby-server/
+    image: laby-server
+    restart: unless-stopped
+    ports:
+      - "${SERVER_PORT:-48080}:48080"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-local}
+      JAVA_OPTS: ${JAVA_OPTS:--Xms2g -Xmx2g -Djava.security.egd=file:/dev/./urandom}
+      ARGS: >-
+        --spring.datasource.dynamic.datasource.master.url=${MASTER_DATASOURCE_URL}
+        --spring.datasource.dynamic.datasource.master.username=${MASTER_DATASOURCE_USERNAME}
+        --spring.datasource.dynamic.datasource.master.password=${MASTER_DATASOURCE_PASSWORD}
+        --spring.datasource.dynamic.datasource.slave.url=${SLAVE_DATASOURCE_URL}
+        --spring.datasource.dynamic.datasource.slave.username=${SLAVE_DATASOURCE_USERNAME}
+        --spring.datasource.dynamic.datasource.slave.password=${SLAVE_DATASOURCE_PASSWORD}
+        --spring.data.redis.host=${REDIS_HOST:-laby-redis}
+        --spring.rabbitmq.host=${RABBITMQ_HOST:-laby-rabbitmq}
+        --spring.rabbitmq.port=5672
+        --spring.rabbitmq.username=${RABBITMQ_USER:-rabbit}
+        --spring.rabbitmq.password=${RABBITMQ_PASSWORD:-rabbit}
+        --rocketmq.name-server=${ROCKETMQ_NAMESERVER:-laby-rocketmq-nameserver:9876}
+        --laby.ai.agentscope.session-store=redis
+        --laby.legal.audit.max-concurrent-per-tenant=5
+        --laby.ai.vector-store.qdrant.host=${QDRANT_HOST:-laby-qdrant}
+        --laby.ai.vector-store.qdrant.port=${QDRANT_PORT:-6334}
+        --laby.ai.document-parse.mineru.enabled=${PARSE_ADAPTER_ENABLED:-true}
+        --laby.ai.document-parse.mineru.base-url=${PARSE_ADAPTER_URL:-http://laby-parse-adapter:8000}
+        --laby.legal.onlyoffice.enabled=${ONLYOFFICE_ENABLED:-true}
+        --laby.legal.onlyoffice.document-server-url=${ONLYOFFICE_URL:-http://laby-onlyoffice/}
+        --laby.legal.onlyoffice.jwt-secret=${ONLYOFFICE_JWT_SECRET:-laby-onlyoffice-dev-secret-change-me}
+        --laby.legal.onlyoffice.callback-base-url=${ONLYOFFICE_CALLBACK_BASE_URL:-http://host.docker.internal:48080/admin-api}
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      qdrant:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+      onlyoffice:
+        condition: service_started
+      parse-adapter:
+        condition: service_started
+    deploy:
+      resources:
+        limits:
+          cpus: "4"
+          memory: 3G
+
+  # ==================== 管理端前端（可选 profile: app） ====================
+  admin:
+    container_name: laby-admin
+    profiles: ["app"]
+    build:
+      context: ../../laby-ui-admin
+      args:
+        NODE_ENV: ${NODE_ENV:-production}
+        PUBLIC_PATH: ${PUBLIC_PATH:-/}
+        VUE_APP_TITLE: ${VUE_APP_TITLE:-Laby管理系统}
+        VUE_APP_BASE_API: ${VUE_APP_BASE_API:-/prod-api}
+        VUE_APP_APP_NAME: ${VUE_APP_APP_NAME:-/}
+        VUE_APP_TENANT_ENABLE: ${VUE_APP_TENANT_ENABLE:-true}
+        VUE_APP_CAPTCHA_ENABLE: ${VUE_APP_CAPTCHA_ENABLE:-true}
+        VUE_APP_DOC_ENABLE: ${VUE_APP_DOC_ENABLE:-true}
+        VUE_APP_BAIDU_CODE: ${VUE_APP_BAIDU_CODE:-fadc1bd5db1a1d6f581df60a1807f8ab}
+    image: laby-admin
+    restart: unless-stopped
+    ports:
+      - "${ADMIN_PORT:-8080}:80"
+    depends_on:
+      - server
+
+volumes:
+  mysql:
+  redis:
+  qdrant:
+  rabbitmq:
+  rocketmq_nameserver:
+  rocketmq_broker:
+  onlyoffice_data:
+  onlyoffice_logs:

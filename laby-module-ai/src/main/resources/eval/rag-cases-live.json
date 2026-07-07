@@ -1,0 +1,52 @@
+[
+  {
+    "caseId": "live-confidentiality",
+    "description": "在线：保密义务检索（需知识库含相关文档）",
+    "query": "保密义务 商业秘密 披露",
+    "topK": 5,
+    "similarityThreshold": 0.1,
+    "expectation": {
+      "expectedContentContains": ["保密"]
+    }
+  },
+  {
+    "caseId": "live-payment",
+    "description": "在线：付款与违约金",
+    "query": "付款期限 逾期 违约金",
+    "topK": 5,
+    "similarityThreshold": 0.1,
+    "expectation": {
+      "expectedContentContains": ["付款", "违约"]
+    }
+  },
+  {
+    "caseId": "live-arbitration",
+    "description": "在线：争议解决与仲裁",
+    "query": "争议解决 仲裁 管辖",
+    "topK": 5,
+    "similarityThreshold": 0.1,
+    "expectation": {
+      "expectedContentContains": ["仲裁", "争议"]
+    }
+  },
+  {
+    "caseId": "live-force-majeure",
+    "description": "在线：不可抗力",
+    "query": "不可抗力 免责 通知",
+    "topK": 5,
+    "similarityThreshold": 0.1,
+    "expectation": {
+      "expectedContentContains": ["不可抗力"]
+    }
+  },
+  {
+    "caseId": "live-ip",
+    "description": "在线：知识产权",
+    "query": "知识产权 归属 侵权",
+    "topK": 5,
+    "similarityThreshold": 0.1,
+    "expectation": {
+      "expectedContentContains": ["知识产权", "归属"]
+    }
+  }
+]

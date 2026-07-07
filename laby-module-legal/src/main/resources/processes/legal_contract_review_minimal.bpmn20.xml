@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                   xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                   xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                   xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                   xmlns:flowable="http://flowable.org/bpmn"
+                   id="diagram_legal_contract_review"
+                   targetNamespace="http://flowable.org/bpmn">
+  <bpmn2:process id="legal_contract_review" name="法务合同审核" isExecutable="true">
+    <bpmn2:startEvent id="start" name="开始"/>
+    <bpmn2:sequenceFlow id="flow1" sourceRef="start" targetRef="task1"/>
+    <bpmn2:userTask id="task1" name="法务处置" flowable:candidateStrategy="36" flowable:candidateParam="">
+      <bpmn2:extensionElements>
+        <flowable:candidateStrategy>36</flowable:candidateStrategy>
+        <flowable:candidateParam/>
+      </bpmn2:extensionElements>
+    </bpmn2:userTask>
+    <bpmn2:sequenceFlow id="flow2" sourceRef="task1" targetRef="end"/>
+    <bpmn2:endEvent id="end" name="结束"/>
+  </bpmn2:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="legal_contract_review">
+      <bpmndi:BPMNShape id="shape_start" bpmnElement="start">
+        <dc:Bounds x="200" y="100" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_task1" bpmnElement="task1">
+        <dc:Bounds x="168" y="180" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_end" bpmnElement="end">
+        <dc:Bounds x="200" y="300" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="edge1" bpmnElement="flow1">
+        <di:waypoint x="218" y="136"/>
+        <di:waypoint x="218" y="180"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge2" bpmnElement="flow2">
+        <di:waypoint x="218" y="260"/>
+        <di:waypoint x="218" y="300"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn2:definitions>

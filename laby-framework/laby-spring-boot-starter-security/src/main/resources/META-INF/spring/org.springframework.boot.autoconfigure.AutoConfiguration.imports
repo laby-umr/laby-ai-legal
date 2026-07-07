@@ -1,0 +1,3 @@
+com.laby.framework.security.config.LabySecurityAutoConfiguration
+com.laby.framework.security.config.LabyWebSecurityConfigurerAdapter
+com.laby.framework.operatelog.config.LabyOperateLogConfiguration

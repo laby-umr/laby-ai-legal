@@ -1,0 +1,72 @@
+[
+  {
+    "caseId": "fuzzy-001",
+    "description": "口语化问法应召回保密义务片段",
+    "query": "那个保密的事儿咋说的",
+    "topK": 5,
+    "segments": [
+      {"id": 5001, "content": "双方应对在合作过程中知悉的商业秘密承担保密义务，未经披露方书面同意不得向第三方披露。"},
+      {"id": 5002, "content": "付款期限为合同签订后30日内，逾期按日万分之五支付违约金。"}
+    ],
+    "expectation": {
+      "expectedSegmentIds": [5001],
+      "expectedContentContains": ["保密"]
+    }
+  },
+  {
+    "caseId": "fuzzy-002",
+    "description": "口语化问法应召回付款违约片段",
+    "query": "付款没按时给咋办",
+    "topK": 5,
+    "segments": [
+      {"id": 5003, "content": "知识产权归属甲方所有，乙方不得擅自使用或转让。"},
+      {"id": 5004, "content": "乙方应在收到发票后15个工作日内完成付款，逾期按日万分之五支付违约金。"}
+    ],
+    "expectation": {
+      "expectedSegmentIds": [5004],
+      "expectedContentContains": ["付款", "违约"]
+    }
+  },
+  {
+    "caseId": "fuzzy-003",
+    "description": "指代性问法应召回仲裁条款",
+    "query": "闹翻了找谁仲裁",
+    "topK": 5,
+    "segments": [
+      {"id": 5005, "content": "本合同履行地为上海市浦东新区。"},
+      {"id": 5006, "content": "因本合同引起的争议，双方应协商解决；协商不成的，提交北京仲裁委员会仲裁。"}
+    ],
+    "expectation": {
+      "expectedSegmentIds": [5006],
+      "expectedContentContains": ["仲裁"]
+    }
+  },
+  {
+    "caseId": "fuzzy-004",
+    "description": "错别字容忍应召回试用期条款",
+    "query": "试用期多长",
+    "topK": 5,
+    "segments": [
+      {"id": 5007, "content": "员工试用期为3个月，试用期内工资为正式工资的80%。"},
+      {"id": 5008, "content": "年假按国家规定执行，工作满一年享有5天带薪年假。"}
+    ],
+    "expectation": {
+      "expectedSegmentIds": [5007],
+      "expectedContentContains": ["试用期"]
+    }
+  },
+  {
+    "caseId": "fuzzy-005",
+    "description": "极简关键词应召回赔偿上限",
+    "query": "赔偿多少封顶",
+    "topK": 5,
+    "segments": [
+      {"id": 5009, "content": "任何一方违约，赔偿责任总额不超过合同总金额的30%。"},
+      {"id": 5010, "content": "不可抗力包括地震、洪水、战争等情形。"}
+    ],
+    "expectation": {
+      "expectedSegmentIds": [5009],
+      "expectedContentContains": ["赔偿", "不超过"]
+    }
+  }
+]

@@ -1,0 +1,144 @@
+[
+  {
+    "caseId": "confidentiality-duty",
+    "description": "查询保密义务应优先召回含「保密」片段",
+    "query": "保密义务 商业秘密",
+    "topK": 3,
+    "segments": [
+      {"id": 1001, "content": "双方应对在合作过程中知悉的商业秘密承担保密义务，未经披露方书面同意不得向第三方披露。"},
+      {"id": 1002, "content": "付款期限为合同签订后30日内，逾期按日万分之五支付违约金。"},
+      {"id": 1003, "content": "保密期限自信息披露之日起5年，期满后仍需对核心商业秘密继续保密。"}
+    ],
+    "expectation": {
+      "expectedSegmentIds": [1001, 1003],
+      "minRecallAtK": 0.5
+    }
+  },
+  {
+    "caseId": "payment-penalty",
+    "description": "查询付款违约应召回付款/违约金片段",
+    "query": "付款逾期 违约金",
+    "topK": 3,
+    "segments": [
+      {"id": 2001, "content": "知识产权归属甲方所有，乙方不得擅自使用或转让。"},
+      {"id": 2002, "content": "乙方应在收到发票后15个工作日内完成付款，逾期按日万分之五支付违约金。"},
+      {"id": 2003, "content": "争议提交北京仲裁委员会仲裁，适用中华人民共和国法律。"}
+    ],
+    "expectation": {
+      "expectedSegmentIds": [2002]
+    }
+  },
+  {
+    "caseId": "arbitration-clause",
+    "description": "查询争议解决应召回仲裁条款",
+    "query": "争议解决 仲裁",
+    "topK": 3,
+    "segments": [
+      {"id": 3001, "content": "本合同履行地为上海市浦东新区。"},
+      {"id": 3002, "content": "因本合同引起的争议，双方应协商解决；协商不成的，提交北京仲裁委员会仲裁。"},
+      {"id": 3003, "content": "不可抗力包括地震、洪水、战争等情形。"}
+    ],
+    "expectation": {
+      "expectedSegmentIds": [3002],
+      "expectedContentContains": ["仲裁"]
+    }
+  },
+  {
+    "caseId": "force-majeure",
+    "description": "查询不可抗力应召回对应片段",
+    "query": "不可抗力 免责",
+    "topK": 3,
+    "segments": [
+      {"id": 4001, "content": "遇不可抗力事件，受影响方应在48小时内通知对方并提供证明，可部分或全部免除责任。"},
+      {"id": 4002, "content": "合同总价为人民币100万元整，含税。"},
+      {"id": 4003, "content": "乙方应保证交付成果不侵犯第三方知识产权。"}
+    ],
+    "expectation": {
+      "expectedSegmentIds": [4001]
+    }
+  },
+  {
+    "caseId": "ip-ownership",
+    "description": "查询知识产权归属",
+    "query": "知识产权 归属",
+    "topK": 3,
+    "segments": [
+      {"id": 5001, "content": "本项目开发成果的知识产权归甲方所有，乙方仅享有署名权。"},
+      {"id": 5002, "content": "验收标准以附件《交付清单》为准。"},
+      {"id": 5003, "content": "保密信息不包括已公开或接收方独立开发的信息。"}
+    ],
+    "expectation": {
+      "expectedSegmentIds": [5001]
+    }
+  },
+  {
+    "caseId": "acceptance-standard",
+    "description": "查询验收标准",
+    "query": "验收 交付清单",
+    "topK": 3,
+    "segments": [
+      {"id": 6001, "content": "甲方应在收到交付物后10个工作日内组织验收，验收标准以附件《交付清单》为准。"},
+      {"id": 6002, "content": "乙方需提供7×24小时技术支持热线。"},
+      {"id": 6003, "content": "合同有效期自签署之日起一年。"}
+    ],
+    "expectation": {
+      "expectedSegmentIds": [6001]
+    }
+  },
+  {
+    "caseId": "contract-term",
+    "description": "查询合同期限",
+    "query": "合同有效期 一年",
+    "topK": 3,
+    "segments": [
+      {"id": 7001, "content": "本合同自双方签字盖章之日起生效，有效期一年，期满前30日可协商续签。"},
+      {"id": 7002, "content": "任何一方不得单方面变更合同条款。"},
+      {"id": 7003, "content": "通知应以书面形式送达注册地址。"}
+    ],
+    "expectation": {
+      "expectedSegmentIds": [7001]
+    }
+  },
+  {
+    "caseId": "multi-hit-confidentiality",
+    "description": "复杂 query 应同时召回多条保密相关片段",
+    "query": "保密期限 第三方披露 商业秘密",
+    "topK": 5,
+    "segments": [
+      {"id": 8001, "content": "接收方不得向任何第三方披露保密信息。"},
+      {"id": 8002, "content": "价格调整机制按季度CPI指数浮动。"},
+      {"id": 8003, "content": "保密义务不因合同终止而失效，保密期限为5年。"},
+      {"id": 8004, "content": "双方确认已对商业秘密采取合理保护措施。"},
+      {"id": 8005, "content": "运输风险自交付承运人时转移。"}
+    ],
+    "expectation": {
+      "expectedSegmentIds": [8001, 8003, 8004],
+      "minRecallAtK": 0.66
+    }
+  },
+  {
+    "caseId": "negative-no-match",
+    "description": "与语料无关的 query 不应强行命中特定期望（仅校验关键词期望为空时通过）",
+    "query": "火星探测 航天器",
+    "topK": 3,
+    "segments": [
+      {"id": 9001, "content": "付款、验收、保密、仲裁等条款见正文。"},
+      {"id": 9002, "content": "本合同适用于软件采购场景。"}
+    ],
+    "expectation": {}
+  },
+  {
+    "caseId": "keyword-only-expectation",
+    "description": "仅关键词期望：TopK 含「违约金」即可",
+    "query": "延迟付款责任",
+    "topK": 3,
+    "segments": [
+      {"id": 10001, "content": "甲方有权单方面解除合同。"},
+      {"id": 10002, "content": "延迟付款超过30日的，乙方有权暂停服务并要求支付违约金。"},
+      {"id": 10003, "content": "适用法律为中国法。"}
+    ],
+    "expectation": {
+      "expectedContentContains": ["违约金"]
+    }
+  }
+]

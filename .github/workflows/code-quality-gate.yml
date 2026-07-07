@@ -1,0 +1,29 @@
+# 代码规范门禁 — 内联 FQN 检查（laby-global §1.4 / OPT-001 W5-1）
+name: Code Quality Gate
+
+on:
+  push:
+    branches: [ master, main ]
+    paths:
+      - 'laby-module-legal/**'
+      - 'laby-module-ai/**'
+      - 'laby-framework/**'
+      - 'docs/superpowers/scripts/check-fqn.ps1'
+      - '.github/workflows/code-quality-gate.yml'
+  pull_request:
+    paths:
+      - 'laby-module-legal/**'
+      - 'laby-module-ai/**'
+      - 'laby-framework/**'
+      - 'docs/superpowers/scripts/check-fqn.ps1'
+      - '.github/workflows/code-quality-gate.yml'
+
+jobs:
+  fqn-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check inline FQN (no import/package)
+        shell: pwsh
+        run: ./docs/superpowers/scripts/check-fqn.ps1

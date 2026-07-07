@@ -1,0 +1,183 @@
+[
+  {
+    "caseId": "pdf-table-payment-ratio",
+    "description": "PDF表格：查询签约付款比例应命中 table_row",
+    "query": "签约 付款比例 30%",
+    "topK": 5,
+    "segments": [
+      {"id": 11001, "content": "付款表 {\"期次\":\"签约\",\"比例\":\"30%\",\"条件\":\"合同生效后7日\"}"},
+      {"id": 11002, "content": "付款表 |期次|比例|\n|---|---|\n|签约|30%|"},
+      {"id": 11003, "content": "表格摘要：付款表，列字段包括 期次、比例、条件，共 2 行数据。"},
+      {"id": 11004, "content": "争议提交北京仲裁委员会。"}
+    ],
+    "expectation": {
+      "expectedSegmentIds": [11001, 11002],
+      "expectedContentContains": ["30%"]
+    }
+  },
+  {
+    "caseId": "pdf-table-acceptance-payment",
+    "description": "PDF表格：验收付款 70%",
+    "query": "验收合格 付款 70%",
+    "topK": 5,
+    "segments": [
+      {"id": 12001, "content": "付款表 {\"期次\":\"验收\",\"比例\":\"70%\",\"条件\":\"验收合格后\"}"},
+      {"id": 12002, "content": "知识产权归甲方所有。"},
+      {"id": 12003, "content": "表格摘要：付款表，列字段包括 期次、比例、条件，共 2 行数据。"}
+    ],
+    "expectation": {
+      "expectedSegmentIds": [12001],
+      "expectedContentContains": ["70%"]
+    }
+  },
+  {
+    "caseId": "pdf-table-summary-semantic",
+    "description": "PDF表格摘要：语义问法应命中 table_summary",
+    "query": "付款表有几行 包含哪些列",
+    "topK": 5,
+    "segments": [
+      {"id": 13001, "content": "表格摘要：付款表，列字段包括 期次、比例、条件，共 2 行数据。"},
+      {"id": 13002, "content": "买方应在验收后付款。"},
+      {"id": 13003, "content": "付款表 {\"期次\":\"签约\",\"比例\":\"30%\"}"}
+    ],
+    "expectation": {
+      "expectedSegmentIds": [13001],
+      "expectedContentContains": ["期次", "比例"]
+    }
+  },
+  {
+    "caseId": "pdf-table-penalty-matrix",
+    "description": "PDF违约金表：按日万分之五",
+    "query": "违约金 万分之五 逾期",
+    "topK": 5,
+    "segments": [
+      {"id": 14001, "content": "违约金表 {\"违约情形\":\"逾期付款\",\"计算方式\":\"按日万分之五\"}"},
+      {"id": 14002, "content": "违约金表 |违约情形|计算方式|\n|逾期付款|按日万分之五|"},
+      {"id": 14003, "content": "表格摘要：违约金表，列字段包括 违约情形、计算方式，共 1 行数据。"}
+    ],
+    "expectation": {
+      "expectedSegmentIds": [14001, 14002],
+      "expectedContentContains": ["万分之五"]
+    }
+  },
+  {
+    "caseId": "pdf-table-delivery-milestone",
+    "description": "PDF交付里程碑表",
+    "query": "里程碑 M2 交付 源代码",
+    "topK": 5,
+    "segments": [
+      {"id": 15001, "content": "里程碑表 {\"阶段\":\"M2\",\"交付物\":\"源代码\",\"时间\":\"T+60\"}"},
+      {"id": 15002, "content": "验收标准以附件清单为准。"},
+      {"id": 15003, "content": "表格摘要：里程碑表，列字段包括 阶段、交付物、时间，共 3 行数据。"}
+    ],
+    "expectation": {
+      "expectedSegmentIds": [15001]
+    }
+  },
+  {
+    "caseId": "pdf-table-sla-response",
+    "description": "PDF SLA 响应时间表",
+    "query": "P1 故障 响应时间 30分钟",
+    "topK": 5,
+    "segments": [
+      {"id": 16001, "content": "SLA表 {\"级别\":\"P1\",\"响应\":\"30分钟\",\"恢复\":\"4小时\"}"},
+      {"id": 16002, "content": "乙方提供7×24技术支持。"},
+      {"id": 16003, "content": "表格摘要：SLA表，列字段包括 级别、响应、恢复，共 4 行数据。"}
+    ],
+    "expectation": {
+      "expectedSegmentIds": [16001],
+      "expectedContentContains": ["30分钟"]
+    }
+  },
+  {
+    "caseId": "pdf-parent-section-payment",
+    "description": "章节上下文：付款条款正文",
+    "query": "付款条款 验收后付款",
+    "topK": 5,
+    "segments": [
+      {"id": 17001, "content": "第一章 付款条款\n买方应在验收合格后30日内付款。"},
+      {"id": 17002, "content": "买方应在验收合格后30日内付款。"},
+      {"id": 17003, "content": "争议解决适用中国法。"}
+    ],
+    "expectation": {
+      "expectedSegmentIds": [17002],
+      "expectedContentContains": ["验收"]
+    }
+  },
+  {
+    "caseId": "pdf-table-insurance-amount",
+    "description": "PDF保险金额表",
+    "query": "保险金额 500万元 第三者责任",
+    "topK": 5,
+    "segments": [
+      {"id": 18001, "content": "保险表 {\"险种\":\"第三者责任险\",\"保额\":\"500万元\"}"},
+      {"id": 18002, "content": "保险表 |险种|保额|\n|第三者责任险|500万元|"},
+      {"id": 18003, "content": "表格摘要：保险表，列字段包括 险种、保额，共 2 行数据。"}
+    ],
+    "expectation": {
+      "expectedSegmentIds": [18001, 18002],
+      "expectedContentContains": ["500万元"]
+    }
+  },
+  {
+    "caseId": "pdf-table-warranty-period",
+    "description": "PDF质保期限表",
+    "query": "质保期 12个月 免费维护",
+    "topK": 5,
+    "segments": [
+      {"id": 19001, "content": "质保表 {\"项目\":\"软件系统\",\"质保期\":\"12个月\",\"服务\":\"免费维护\"}"},
+      {"id": 19002, "content": "合同总价100万元含税。"},
+      {"id": 19003, "content": "表格摘要：质保表，列字段包括 项目、质保期、服务，共 1 行数据。"}
+    ],
+    "expectation": {
+      "expectedSegmentIds": [19001]
+    }
+  },
+  {
+    "caseId": "pdf-table-entity-signatory",
+    "description": "PDF签约主体表",
+    "query": "甲方 签约主体 科技有限公司",
+    "topK": 5,
+    "segments": [
+      {"id": 20001, "content": "主体表 {\"角色\":\"甲方\",\"名称\":\"某某科技有限公司\"}"},
+      {"id": 20002, "content": "主体表 {\"角色\":\"乙方\",\"名称\":\"服务商股份有限公司\"}"},
+      {"id": 20003, "content": "表格摘要：主体表，列字段包括 角色、名称，共 2 行数据。"}
+    ],
+    "expectation": {
+      "expectedSegmentIds": [20001],
+      "expectedContentContains": ["科技有限公司"]
+    }
+  },
+  {
+    "caseId": "pdf-table-tax-rate",
+    "description": "PDF税率表",
+    "query": "增值税 税率 6%",
+    "topK": 5,
+    "segments": [
+      {"id": 21001, "content": "税率表 {\"税种\":\"增值税\",\"税率\":\"6%\"}"},
+      {"id": 21002, "content": "发票类型为增值税专用发票。"},
+      {"id": 21003, "content": "表格摘要：税率表，列字段包括 税种、税率，共 1 行数据。"}
+    ],
+    "expectation": {
+      "expectedSegmentIds": [21001],
+      "expectedContentContains": ["6%"]
+    }
+  },
+  {
+    "caseId": "pdf-table-multi-hit-liability",
+    "description": "PDF责任矩阵多行召回",
+    "query": "数据泄露 通知义务 72小时",
+    "topK": 5,
+    "segments": [
+      {"id": 22001, "content": "责任矩阵 {\"事件\":\"数据泄露\",\"义务\":\"72小时内通知对方\"}"},
+      {"id": 22002, "content": "责任矩阵 {\"事件\":\"服务中断\",\"义务\":\"4小时内响应\"}"},
+      {"id": 22003, "content": "表格摘要：责任矩阵，列字段包括 事件、义务，共 2 行数据。"},
+      {"id": 22004, "content": "不可抗力条款见第十章。"}
+    ],
+    "expectation": {
+      "expectedSegmentIds": [22001],
+      "expectedContentContains": ["72小时"],
+      "minRecallAtK": 0.5
+    }
+  }
+]

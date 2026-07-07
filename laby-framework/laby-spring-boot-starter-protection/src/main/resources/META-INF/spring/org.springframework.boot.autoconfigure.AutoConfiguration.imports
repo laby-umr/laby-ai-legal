@@ -1,0 +1,4 @@
+com.laby.framework.idempotent.config.LabyIdempotentConfiguration
+com.laby.framework.lock4j.config.LabyLock4jConfiguration
+com.laby.framework.ratelimiter.config.LabyRateLimiterConfiguration
+com.laby.framework.signature.config.LabyApiSignatureAutoConfiguration

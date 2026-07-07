@@ -1,0 +1,16 @@
+{
+  "plugins": {
+    "superpowers": {
+      "enabled": true
+    },
+    "linear": {
+      "enabled": true
+    },
+    "harness": {
+      "enabled": true
+    },
+    "shadcn": {
+      "enabled": true
+    }
+  }
+}

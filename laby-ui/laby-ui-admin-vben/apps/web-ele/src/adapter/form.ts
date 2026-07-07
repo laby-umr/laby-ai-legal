@@ -1,0 +1,62 @@
+import type {
+  VbenFormProps as FormProps,
+  VbenFormSchema as FormSchema,
+} from '@vben/common-ui';
+
+import type { ComponentPropsMap, ComponentType } from './component';
+
+import { setupVbenForm, useVbenForm as useForm, z } from '@vben/common-ui';
+import { $t } from '@vben/locales';
+import { isMobile } from '@vben/utils';
+
+async function initSetupVbenForm() {
+  setupVbenForm<ComponentType>({
+    config: {
+      modelPropNameMap: {
+        Upload: 'fileList',
+        CheckboxGroup: 'model-value',
+      },
+    },
+    defineRules: {
+      required: (value, _params, ctx) => {
+        if (value === undefined || value === null || value.length === 0) {
+          return $t('ui.formRules.required', [ctx.label]);
+        }
+        return true;
+      },
+      selectRequired: (value, _params, ctx) => {
+        if (value === undefined || value === null) {
+          return $t('ui.formRules.selectRequired', [ctx.label]);
+        }
+        return true;
+      },
+      // 手机号非必填
+      mobile: (value, _params, ctx) => {
+        if (value === undefined || value === null || value.length === 0) {
+          return true;
+        } else if (!isMobile(value)) {
+          return $t('ui.formRules.mobile', [ctx.label]);
+        }
+        return true;
+      },
+      // 手机号必填
+      mobileRequired: (value, _params, ctx) => {
+        if (value === undefined || value === null || value.length === 0) {
+          return $t('ui.formRules.required', [ctx.label]);
+        }
+        if (!isMobile(value)) {
+          return $t('ui.formRules.mobile', [ctx.label]);
+        }
+        return true;
+      },
+    },
+  });
+}
+
+const useVbenForm = useForm<ComponentType, ComponentPropsMap>;
+
+export { initSetupVbenForm, useVbenForm, z };
+
+export type VbenFormApi = ReturnType<typeof useVbenForm>[1]; // add by 芋艿：用于 data.ts 表单 schema 内调用 setFieldValue
+export type VbenFormSchema = FormSchema<ComponentType, ComponentPropsMap>;
+export type VbenFormProps = FormProps<ComponentType, ComponentPropsMap>;

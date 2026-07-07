@@ -1,0 +1,23 @@
+{
+  "name": "LegalLocate",
+  "guid": "asc.legal-locate-v3",
+  "baseUrl": "",
+  "variations": [
+    {
+      "description": "法务审阅正文定位",
+      "url": "index.html",
+      "icons": [],
+      "isViewer": false,
+      "EditorsSupport": ["word"],
+      "isVisual": false,
+      "isModal": false,
+      "isInsideMode": false,
+      "isSystem": true,
+      "type": "system",
+      "initDataType": "none",
+      "initData": "",
+      "buttons": [],
+      "events": ["onDocumentReady"]
+    }
+  ]
+}

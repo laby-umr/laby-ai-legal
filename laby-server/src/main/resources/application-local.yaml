@@ -1,0 +1,354 @@
+server:
+  port: 48080
+
+--- #################### 数据库相关配置 ####################
+
+spring:
+  autoconfigure:
+    # noinspection SpringBootApplicationYaml
+    exclude:
+      - org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration # 默认 local 环境，不开启 Quartz 的自动配置
+  # 数据源配置项
+  datasource:
+    druid: # Druid 【监控】相关的全局配置
+      web-stat-filter:
+        enabled: true
+      stat-view-servlet:
+        enabled: true
+        allow: # 设置白名单，不填则允许所有访问
+        url-pattern: /druid/*
+        login-username: # 控制台管理用户名和密码
+        login-password:
+      filter:
+        stat:
+          enabled: true
+          log-slow-sql: true # 慢 SQL 记录
+          slow-sql-millis: 100
+          merge-sql: true
+        wall:
+          config:
+            multi-statement-allow: true
+    dynamic: # 多数据源配置
+      druid: # Druid 【连接池】相关的全局配置
+        initial-size: 1 # 初始连接数
+        min-idle: 1 # 最小连接池数量
+        max-active: 80 # 最大连接池数量
+        max-wait: 60000 # 配置获取连接等待超时的时间，单位：毫秒（1 分钟）
+        time-between-eviction-runs-millis: 60000 # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位：毫秒（1 分钟）
+        min-evictable-idle-time-millis: 600000 # 配置一个连接在池中最小生存的时间，单位：毫秒（10 分钟）
+        max-evictable-idle-time-millis: 1800000 # 配置一个连接在池中最大生存的时间，单位：毫秒（30 分钟）
+        validation-query: SELECT 1 FROM DUAL # 配置检测连接是否有效
+        test-while-idle: true
+        test-on-borrow: false
+        test-on-return: false
+        pool-prepared-statements: true # 是否开启 PreparedStatement 缓存
+        max-pool-prepared-statement-per-connection-size: 20 # 每个连接缓存的 PreparedStatement 数量
+      primary: master
+      datasource:
+        master:
+          url: jdbc:mysql://127.0.0.1:3308/laby-system?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true
+          username: root
+          password: 123456
+        slave: # 模拟从库，可根据自己需要修改
+          lazy: true # 开启懒加载，保证启动速度
+          url: jdbc:mysql://127.0.0.1:3308/laby-system?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&rewriteBatchedStatements=true&nullCatalogMeansCurrent=true
+          username: root
+          password: 123456
+
+  # Redis 配置。Redisson 默认的配置足够使用，一般不需要进行调优
+  data:
+    redis:
+      host: 127.0.0.1 # 地址
+      port: 6379 # 端口
+      database: 3 # 数据库索引
+#      password: dev # 密码，建议生产环境开启
+
+--- #################### 定时任务相关配置 ####################
+
+# Quartz 配置项，对应 QuartzProperties 配置类
+spring:
+  quartz:
+    auto-startup: true # 本地环境，需要开启 Job
+    scheduler-name: schedulerName # Scheduler 名字。默认为 schedulerName
+    job-store-type: jdbc # Job 存储器类型。默认为 memory 表示内存，可选 jdbc 使用数据库。
+    wait-for-jobs-to-complete-on-shutdown: true # 应用关闭时，是否等待定时任务执行完成。默认为 false ，建议设置为 true
+    properties: # 添加 Quartz Scheduler 附加属性，更多可以看 http://www.quartz-scheduler.org/documentation/2.4.0-SNAPSHOT/configuration.html 文档
+      org:
+        quartz:
+          # Scheduler 相关配置
+          scheduler:
+            instanceName: schedulerName
+            instanceId: AUTO # 自动生成 instance ID
+          # JobStore 相关配置
+          jobStore:
+            # JobStore 实现类。可见博客：https://blog.csdn.net/weixin_42458219/article/details/122247162
+            class: org.springframework.scheduling.quartz.LocalDataSourceJobStore
+            isClustered: true # 是集群模式
+            clusterCheckinInterval: 15000 # 集群检查频率，单位：毫秒。默认为 15000，即 15 秒
+            misfireThreshold: 60000 # misfire 阀值，单位：毫秒。
+          # 线程池相关配置
+          threadPool:
+            threadCount: 25 # 线程池大小。默认为 10 。
+            threadPriority: 5 # 线程优先级
+            class: org.quartz.simpl.SimpleThreadPool # 线程池类型
+    jdbc: # 使用 JDBC 的 JobStore 的时候，JDBC 的配置
+      initialize-schema: NEVER # 是否自动使用 SQL 初始化 Quartz 表结构。这里设置成 never ，我们手动创建表结构。
+
+--- #################### 消息队列相关 ####################
+
+# rocketmq 配置项，对应 RocketMQProperties 配置类
+rocketmq:
+  name-server: 127.0.0.1:9876 # RocketMQ Namesrv
+
+spring:
+  # RabbitMQ 配置项，对应 RabbitProperties 配置类
+  rabbitmq:
+    host: 127.0.0.1 # RabbitMQ 服务的地址
+    port: 5672 # RabbitMQ 服务的端口
+    username: rabbit # RabbitMQ 服务的账号
+    password: rabbit # RabbitMQ 服务的密码
+  # Kafka 配置项，对应 KafkaProperties 配置类
+  kafka:
+    bootstrap-servers: 127.0.0.1:9092 # 指定 Kafka Broker 地址，可以设置多个，以逗号分隔
+
+--- #################### 服务保障相关配置 ####################
+
+# Lock4j 配置项
+lock4j:
+  acquire-timeout: 3000 # 获取分布式锁超时时间，默认为 3000 毫秒
+  expire: 30000 # 分布式锁的超时时间，默认为 30000 毫秒
+
+--- #################### 监控相关配置 ####################
+
+# Actuator 监控端点的配置项
+management:
+  endpoints:
+    web:
+      base-path: /actuator # Actuator 提供的 API 接口的根目录。默认为 /actuator
+      exposure:
+        include: '*' # 需要开放的端点。默认值只打开 health 和 info 两个端点。通过设置 * ，可以开放所有端点。
+
+# Spring Boot Admin 配置项
+spring:
+  boot:
+    admin:
+      # Spring Boot Admin Client 客户端的相关配置
+      client:
+        url: http://127.0.0.1:${server.port}/${spring.boot.admin.context-path} # 设置 Spring Boot Admin Server 地址
+        instance:
+          service-host-type: IP # 注册实例时，优先使用 IP [IP, HOST_NAME, CANONICAL_HOST_NAME]
+        username: admin
+        password: admin
+      # Spring Boot Admin Server 服务端的相关配置
+      context-path: /admin # 配置 Spring Boot Admin 上下文路径
+      # 允许 iframe 嵌入，解决仪表盘出现 Content-Security-Policy 报错 "'self' [同源策略]"
+      frame-ancestors: "'self' localhost localhost:48080 127.0.0.1 127.0.0.1:48080"
+
+# 日志文件配置
+logging:
+  file:
+    name: ${user.home}/logs/${spring.application.name}.log # 日志文件名，全路径
+  level:
+    # 配置自己写的 MyBatis Mapper 打印日志
+    com.laby.module.bpm.dal.mysql: debug
+    com.laby.module.infra.dal.mysql: debug
+    com.laby.module.infra.dal.mysql.logger.ApiErrorLogMapper: INFO # 配置 ApiErrorLogMapper 日志级别为 info，避免 GlobalExceptionHandler 打印过多
+    com.laby.module.infra.dal.mysql.job.JobLogMapper: INFO # 配置 JobLogMapper 日志级别为 info
+    com.laby.module.infra.dal.mysql.file.FileConfigMapper: INFO # 配置 FileConfigMapper 日志级别为 info
+    com.laby.module.pay.dal.mysql: debug
+    com.laby.module.pay.dal.mysql.notify.PayNotifyTaskMapper: INFO # 配置 PayNotifyTaskMapper 日志级别为 info
+    com.laby.module.system.dal.mysql: debug
+    com.laby.module.system.dal.mysql.sms.SmsChannelMapper: INFO # 配置 SmsChannelMapper 日志级别为 info
+    com.laby.module.tool.dal.mysql: debug
+    com.laby.module.member.dal.mysql: debug
+    com.laby.module.trade.dal.mysql: debug
+    com.laby.module.promotion.dal.mysql: debug
+    com.laby.module.statistics.dal.mysql: debug
+    com.laby.module.crm.dal.mysql: debug
+    com.laby.module.erp.dal.mysql: debug
+    com.laby.module.mes.dal.mysql: debug
+    com.laby.module.wms.dal.mysql: debug
+    com.laby.module.iot.dal.mysql: debug
+    com.laby.module.iot.dal.tdengine: DEBUG
+    com.laby.module.iot.service.rule: debug
+    com.laby.module.ai.dal.mysql: debug
+    com.laby.module.im.dal.mysql: debug
+    org.springframework.context.support.PostProcessorRegistrationDelegate: ERROR # TODO 芋艿：临时解决 Spring Boot 3.X 启动报错问题，可先设置为 WARN 级别
+
+debug: false
+
+--- #################### 微信公众号相关配置 ####################
+
+wx:
+  mp: # 公众号配置（必填），参见 https://github.com/Wechat-Group/WxJava/blob/develop/spring-boot-starters/wx-java-mp-spring-boot-starter/README.md 文档
+    app-id: wxf56b1542b9e85f8a # 测试号 Kongdy 提供的账号
+    secret: 496379dcef1ba869e9234de8d598cfd3
+    # 存储配置，解决 AccessToken 的跨节点的共享
+    config-storage:
+      type: RedisTemplate # 采用 RedisTemplate 操作 Redis，会自动从 Spring 中获取
+      key-prefix: wx # Redis Key 的前缀
+      http-client-type: HttpClient # 采用 HttpClient 请求微信公众号平台
+  miniapp: # 小程序配置（必填），参见 https://github.com/Wechat-Group/WxJava/blob/develop/spring-boot-starters/wx-java-miniapp-spring-boot-starter/README.md 文档
+    appid: wxc4598c446f8a9cb3 # 测试号 Kongdy 提供的账号
+    secret: 4a1a04e07f6a4a0751b39c3064a92c8b
+    config-storage:
+      type: RedisTemplate # 采用 RedisTemplate 操作 Redis，会自动从 Spring 中获取
+      key-prefix: wa # Redis Key 的前缀
+      http-client-type: HttpClient # 采用 HttpClient 请求微信公众号平台
+
+
+--- #################### AI 模型与 Rerank（本地覆盖） ####################
+#
+# 本地默认关闭 Rerank，走 RRF 融合 + 降级排序（无需百炼 api-key）。
+# 若要测试 Rerank，需同时开启：
+#   spring.ai.model.rerank / laby.ai.model.rerank = true
+#   laby.ai.knowledge-retrieval.rerank.enabled = true
+#   并配置有效的 spring.ai.dashscope.api-key
+
+spring:
+  ai:
+    model:
+      rerank: false # 关闭 DashScope Rerank 客户端
+
+--- #################### 芋道相关配置（AI / 法务 / 系统） ####################
+
+# 本地环境业务配置；未写明的项继承 application.yaml 默认值
+laby:
+  ai:
+    # ---------- 模型能力开关 ----------
+    model:
+      rerank: false # 与 spring.ai.model.rerank 保持一致
+
+    # ---------- DashScope（Rerank HTTP 客户端） ----------
+    # 未配置 api-key 时自动读取 spring.ai.dashscope.api-key
+    dashscope:
+      rerank-model: gte-rerank-v2 # Rerank 模型名，一般无需修改
+
+    # ---------- AgentScope 对话 Agent ----------
+    agentscope:
+      workspace-path: ${java.io.tmpdir}/laby-agentscope # Agent 工作目录（临时文件）
+      session-store: redis # 会话存储：redis | memory | workspace
+      session-key-prefix: "as:" # Redis 会话 key 前缀
+      audit-subagent-pilot: false # 法务审核子 Agent 试点开关
+      compaction-summary-persist: true # 超长对话压缩摘要是否持久化
+      history-token-budget: 32000 # 注入模型的历史 token 预算上限
+
+    # ---------- 文档解析与结构化分块（入库） ----------
+    document-parse:
+      enabled: true # 是否启用 MinerU/Docling 等解析引擎
+      default-engine: auto # auto | tika | mineru | docling
+      mineru:
+        enabled: true # PDF 等复杂文档优先 MinerU（需 Docker parse-adapter:8000）
+        base-url: http://127.0.0.1:8000
+        parse-path: /api/v1/parse
+        timeout-ms: 300000 # 解析超时（毫秒）
+      structured-chunk:
+        table-row-index-enabled: true # 表格按行建索引段（利于单元格问答）
+        table-summary-enabled: true # 为表格生成摘要段
+        parent-backfill-enabled: true # 检索命中子段时回填父段上下文
+      docling:
+        enabled: true # DOC/DOCX/XLSX 等（需 Docker docling:8001）
+        base-url: http://127.0.0.1:8001
+
+    # ---------- 知识库 Universal RAG 检索 ----------
+    knowledge-retrieval:
+      enabled: true # 必须为 true；关闭后检索接口报错
+      default-similarity-threshold: 0.60 # Rerank 分数阈值（0~1），低于此丢弃
+      min-answer-score: 0.45 # 聊天「无引用守卫」最低分，低于则固定回复未命中
+      no-answer-policy: strict # strict=拦截 | hint=提示 | relaxed=不拦截
+      hybrid:
+        enabled: true # Dense(Qdrant) + Sparse(MySQL FULLTEXT) 混合检索
+        sparse-enabled: true # 是否启用 Sparse 路
+      multi-query:
+        enabled: true # 查询扩展（多 variant 并行检索后 RRF 融合）
+        mode: rule # rule=规则扩展 | llm=LLM 改写（更慢）
+      rerank:
+        enabled: false # 关闭 Rerank；启用时还需 model.rerank=true + dashscope api-key
+
+    # ---------- Qdrant 向量库（gRPC） ----------
+    vector-store:
+      qdrant:
+        host: 127.0.0.1 # Docker: laby-qdrant
+        port: 6334 # gRPC 端口（REST 为 6333）
+        collection-name: knowledge_segment # 集合名，与入库一致
+
+  # ---------- 法务合同 AI ----------
+  legal:
+    chat:
+      max-history-turns: 8 # 合同问答注入的最大轮数
+      history-token-budget: 32000 # 合同问答历史 token 上限
+      max-turn-chars: 4000 # 单轮用户消息截断长度
+    orchestration:
+      tool-context-ttl-hours: 24 # 多合同编排 Tool 上下文 Redis TTL（小时）
+    memory:
+      fact-extraction-enabled: true # 是否抽取合同情节记忆
+      fact-extraction-use-llm: false # false=规则抽取，true=LLM 抽取（更准更慢）
+      max-appendix-items: 10 # 记忆附录条数上限
+      fact-extraction-min-chars: 20 # 参与抽取的最小文本长度
+    audit:
+      max-concurrent-per-tenant: 5 # 每租户并行 AI 审核上限（Redis 控制）
+    onlyoffice:
+      enabled: true # 是否启用 OnlyOffice 在线预览/编辑
+      document-server-url: http://127.0.0.1:8088/ # OnlyOffice Document Server
+      jwt-secret: laby-onlyoffice-dev-secret-change-me # 与 OnlyOffice 容器 JWT 一致
+      pdf-edit-enabled: false # PDF 是否允许编辑（一般仅预览）
+      callback-base-url: http://host.docker.internal:48080/admin-api # DS 回调宿主机后端
+      plugin-mount-on-document-server: true # 定位插件是否挂载到 DS 容器
+      plugin-base-url: http://127.0.0.1:48080/admin-api # 插件静态资源/API 基址
+      file-token-ttl-minutes: 15 # 文档下载临时 token 有效期（分钟）
+      editor-lang: zh-CN # 编辑器语言
+    format-convert:
+      libre-office-enabled: false # 是否用 LibreOffice 做格式转换
+      libre-office-path: soffice # soffice 可执行路径
+      timeout-seconds: 120 # 转换超时（秒）
+
+  # ---------- 系统通用（本地便捷项） ----------
+  captcha:
+    enable: false # 本地关闭验证码，方便 Postman/自动化登录
+  security:
+    mock-enable: true # 本地 Mock 登录（开发用，生产务必 false）
+  pay:
+    order-notify-url: https://yutou.mynatapp.cc/admin-api/pay/notify/order # 支付渠道的【支付】回调地址
+    refund-notify-url: https://yutou.mynatapp.cc/admin-api/pay/notify/refund # 支付渠道的【退款】回调地址
+    transfer-notify-url: https://yutou.mynatapp.cc/admin-api/pay/notify/transfer # 支付渠道的【转账】回调地址
+  access-log: # 访问日志的配置项
+    enable: false # 本地可关，减少日志量
+  demo: false # 关闭演示模式
+  wxa-code:
+    env-version: develop # 小程序版本: 正式版为 "release"，体验版为 "trial"，开发版为 "develop"
+  wxa-subscribe-message:
+    miniprogram-state: developer # 跳转小程序类型：开发版为 "developer"，体验版为 "trial"，正式版为 "formal"
+  tencent-lbs-key: TVDBZ-TDILD-4ON4B-PFDZA-RNLKH-VVF6E # QQ 地图的密钥 https://lbs.qq.com/service/staticV2/staticGuide/staticDoc
+
+justauth:
+  enabled: true
+  type:
+    DINGTALK: # 钉钉
+      client-id: dingvrnreaje3yqvzhxg
+      client-secret: i8E6iZyDvZj51JIb0tYsYfVQYOks9Cq1lgryEjFRqC79P3iJcrxEwT6Qk2QvLrLI
+      ignore-check-redirect-uri: true
+    WECHAT_ENTERPRISE: # 企业微信
+      client-id: wwd411c69a39ad2e54
+      client-secret: 1wTb7hYxnpT2TUbIeHGXGo7T0odav1ic10mLdyyATOw
+      agent-id: 1000004
+      ignore-check-redirect-uri: true
+    # noinspection SpringBootApplicationYaml
+    WECHAT_MINI_PROGRAM: # 微信小程序
+      client-id: ${wx.miniapp.appid}
+      client-secret: ${wx.miniapp.secret}
+      ignore-check-redirect-uri: true
+      ignore-check-state: true # 微信小程序，不会使用到 state，所以不进行校验
+    WECHAT_MP: # 微信公众号
+      client-id: ${wx.mp.app-id}
+      client-secret: ${wx.mp.secret}
+      ignore-check-redirect-uri: true
+    ALIPAY: # 支付宝小程序
+      client-id: xx
+      client-secret: xx
+      alipay-public-key: xx
+      ignore-check-redirect-uri: true
+      ignore-check-state: true
+  cache:
+    type: REDIS
+    prefix: 'social_auth_state:' # 缓存前缀，目前只对 Redis 缓存生效，默认 JUSTAUTH::STATE::
+    timeout: 24h # 超时时长，目前只对 Redis 缓存生效，默认 3 分钟

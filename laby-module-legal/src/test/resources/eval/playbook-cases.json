@@ -1,0 +1,251 @@
+[
+  {
+    "caseId": "mandatory-confidentiality-missing",
+    "description": "全文无「保密」时应命中必备条款规则",
+    "rules": [
+      {
+        "ruleId": 1,
+        "name": "保密条款",
+        "ruleType": "MANDATORY_CLAUSE",
+        "matchPattern": "保密",
+        "matchType": "KEYWORD",
+        "riskLevel": "HIGH"
+      }
+    ],
+    "paragraphs": [
+      {
+        "paragraphId": "p-1",
+        "text": "本合同为采购框架协议，双方就交付与付款作出约定。"
+      }
+    ],
+    "expectation": {
+      "minOpinions": 1,
+      "titleContains": "保密",
+      "sourceType": "RULE",
+      "minRiskLevel": "HIGH"
+    }
+  },
+  {
+    "caseId": "forbidden-unlimited-liability",
+    "description": "命中禁止性正则时应产生高风险意见",
+    "rules": [
+      {
+        "ruleId": 2,
+        "name": "无限责任",
+        "ruleType": "FORBIDDEN_PATTERN",
+        "matchPattern": "无限.*责任",
+        "matchType": "REGEX",
+        "riskLevel": "HIGH"
+      }
+    ],
+    "paragraphs": [
+      {
+        "paragraphId": "p-2",
+        "text": "乙方须承担无限责任，直至债务清偿完毕。"
+      }
+    ],
+    "expectation": {
+      "minOpinions": 1,
+      "titleContains": "无限",
+      "sourceType": "RULE",
+      "minRiskLevel": "HIGH"
+    }
+  },
+  {
+    "caseId": "clean-contract-no-hit",
+    "description": "必备关键词已存在时不应产生意见",
+    "rules": [
+      {
+        "ruleId": 3,
+        "name": "仲裁条款",
+        "ruleType": "MANDATORY_CLAUSE",
+        "matchPattern": "仲裁",
+        "matchType": "KEYWORD",
+        "riskLevel": "MEDIUM"
+      }
+    ],
+    "paragraphs": [
+      {
+        "paragraphId": "p-3",
+        "text": "争议提交北京仲裁委员会仲裁。"
+      }
+    ],
+    "expectation": {
+      "maxOpinions": 0
+    }
+  },
+  {
+    "caseId": "forbidden-keyword-exact",
+    "description": "KEYWORD 类型禁止表述应精确匹配",
+    "rules": [
+      {
+        "ruleId": 4,
+        "name": "独家垄断",
+        "ruleType": "FORBIDDEN_PATTERN",
+        "matchPattern": "独家垄断",
+        "matchType": "KEYWORD",
+        "riskLevel": "HIGH"
+      }
+    ],
+    "paragraphs": [
+      {
+        "paragraphId": "p-4",
+        "text": "甲方享有在本区域的独家垄断经营权。"
+      }
+    ],
+    "expectation": {
+      "minOpinions": 1,
+      "titleContains": "独家",
+      "sourceType": "RULE"
+    }
+  },
+  {
+    "caseId": "mandatory-multiple-rules-partial",
+    "description": "多规则并行时仅缺失项应产出意见",
+    "rules": [
+      {
+        "ruleId": 5,
+        "name": "保密条款",
+        "ruleType": "MANDATORY_CLAUSE",
+        "matchPattern": "保密",
+        "matchType": "KEYWORD",
+        "riskLevel": "HIGH"
+      },
+      {
+        "ruleId": 6,
+        "name": "仲裁条款",
+        "ruleType": "MANDATORY_CLAUSE",
+        "matchPattern": "仲裁",
+        "matchType": "KEYWORD",
+        "riskLevel": "MEDIUM"
+      }
+    ],
+    "paragraphs": [
+      {
+        "paragraphId": "p-5",
+        "text": "争议提交上海仲裁委员会仲裁解决。"
+      }
+    ],
+    "expectation": {
+      "minOpinions": 1,
+      "maxOpinions": 1,
+      "titleContains": "保密",
+      "sourceType": "RULE"
+    }
+  },
+  {
+    "caseId": "forbidden-case-insensitive",
+    "description": "禁止表述匹配应忽略大小写",
+    "rules": [
+      {
+        "ruleId": 7,
+        "name": "自动续期",
+        "ruleType": "FORBIDDEN_PATTERN",
+        "matchPattern": "自动续期",
+        "matchType": "KEYWORD",
+        "riskLevel": "MEDIUM"
+      }
+    ],
+    "paragraphs": [
+      {
+        "paragraphId": "p-6",
+        "text": "本协议到期后将自动续期一年。"
+      }
+    ],
+    "expectation": {
+      "minOpinions": 1,
+      "titleContains": "自动续期"
+    }
+  },
+  {
+    "caseId": "custom-llm-rule-skipped",
+    "description": "CUSTOM_LLM 规则应被确定性引擎跳过",
+    "rules": [
+      {
+        "ruleId": 8,
+        "name": "语义风险",
+        "ruleType": "CUSTOM_LLM",
+        "matchPattern": "不公平",
+        "matchType": "KEYWORD",
+        "riskLevel": "HIGH"
+      }
+    ],
+    "paragraphs": [
+      {
+        "paragraphId": "p-7",
+        "text": "本条款可能对乙方不公平。"
+      }
+    ],
+    "expectation": {
+      "maxOpinions": 0
+    }
+  },
+  {
+    "caseId": "empty-rules-no-opinion",
+    "description": "无确定性规则时不应产出意见",
+    "rules": [],
+    "paragraphs": [
+      {
+        "paragraphId": "p-8",
+        "text": "普通交付条款。"
+      }
+    ],
+    "expectation": {
+      "maxOpinions": 0
+    }
+  },
+  {
+    "caseId": "forbidden-multi-paragraph-dedup",
+    "description": "同一规则跨段落命中应去重",
+    "rules": [
+      {
+        "ruleId": 9,
+        "name": "无限责任",
+        "ruleType": "FORBIDDEN_PATTERN",
+        "matchPattern": "无限责任",
+        "matchType": "KEYWORD",
+        "riskLevel": "HIGH"
+      }
+    ],
+    "paragraphs": [
+      {
+        "paragraphId": "p-9a",
+        "text": "乙方承担无限责任。"
+      },
+      {
+        "paragraphId": "p-9b",
+        "text": "丙方亦承担无限责任。"
+      }
+    ],
+    "expectation": {
+      "minOpinions": 1,
+      "maxOpinions": 2,
+      "titleContains": "无限"
+    }
+  },
+  {
+    "caseId": "mandatory-medium-risk",
+    "description": "缺失必备条款可产出 MEDIUM 风险意见",
+    "rules": [
+      {
+        "ruleId": 10,
+        "name": "知识产权",
+        "ruleType": "MANDATORY_CLAUSE",
+        "matchPattern": "知识产权",
+        "matchType": "KEYWORD",
+        "riskLevel": "MEDIUM"
+      }
+    ],
+    "paragraphs": [
+      {
+        "paragraphId": "p-10",
+        "text": "双方就软件开发与交付安排作出约定。"
+      }
+    ],
+    "expectation": {
+      "minOpinions": 1,
+      "titleContains": "知识产权",
+      "minRiskLevel": "MEDIUM"
+    }
+  }
+]

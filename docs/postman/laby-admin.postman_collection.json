@@ -1,0 +1,99 @@
+{
+  "info": {
+    "name": "Laby Admin",
+    "description": "laby-admin 管理后台 API。变更后请 re-import。规范见 docs/postman/README.md",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:48080" },
+    { "key": "tenantId", "value": "1" },
+    { "key": "accessToken", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "_Auth",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const j = pm.response.json();",
+                  "pm.test('code is 0', () => pm.expect(j.code).to.eql(0));",
+                  "if (j.data && j.data.accessToken) {",
+                  "  pm.collectionVariables.set('accessToken', j.data.accessToken);",
+                  "  pm.environment.set('accessToken', j.data.accessToken);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "tenant-id", "value": "{{tenantId}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": "{{baseUrl}}/admin-api/system/auth/login",
+            "description": "本地登录。需 application-local.yaml captcha.enable=false"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Legal",
+      "item": [
+        {
+          "name": "GET 合同分页",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "tenant-id", "value": "{{tenantId}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin-api/legal/contract/page?pageNo=1&pageSize=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin-api", "legal", "contract", "page"],
+              "query": [
+                { "key": "pageNo", "value": "1" },
+                { "key": "pageSize", "value": "10" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "AI",
+      "item": [
+        {
+          "name": "GET 知识库分页",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "tenant-id", "value": "{{tenantId}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin-api/ai/knowledge/page?pageNo=1&pageSize=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin-api", "ai", "knowledge", "page"],
+              "query": [
+                { "key": "pageNo", "value": "1" },
+                { "key": "pageSize", "value": "10" }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

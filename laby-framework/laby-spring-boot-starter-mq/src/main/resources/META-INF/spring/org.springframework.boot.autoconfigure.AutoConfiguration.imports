@@ -1,0 +1,3 @@
+com.laby.framework.mq.redis.config.LabyRedisMQProducerAutoConfiguration
+com.laby.framework.mq.redis.config.LabyRedisMQConsumerAutoConfiguration
+com.laby.framework.mq.rabbitmq.config.LabyRabbitMQAutoConfiguration

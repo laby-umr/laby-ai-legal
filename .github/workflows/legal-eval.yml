@@ -1,0 +1,38 @@
+# Playbook 黄金集回归（E7）— 改 Prompt / Orchestrator / Playbook 时阻断劣化
+name: Legal Playbook Eval
+
+on:
+  push:
+    branches: [ master, main ]
+    paths:
+      - 'laby-module-legal/**'
+      - '.github/workflows/legal-eval.yml'
+  pull_request:
+    paths:
+      - 'laby-module-legal/**'
+      - '.github/workflows/legal-eval.yml'
+
+jobs:
+  playbook-eval:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Run Playbook golden eval + CI gate
+        run: mvn -B -pl laby-module-legal test "-Dtest=LegalPlaybookEvalRunnerTest,LegalDeterministicAuditEngineTest"
+
+      - name: Upload eval report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playbook-eval-report
+          path: laby-module-legal/target/eval-reports/
+          if-no-files-found: ignore

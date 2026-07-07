@@ -1,0 +1,40 @@
+# RAG 黄金集回归 — 改检索 / 分片 / 融合逻辑时阻断劣化
+name: AI RAG Eval
+
+on:
+  push:
+    branches: [ master, main ]
+    paths:
+      - 'laby-module-ai/**'
+      - '.github/workflows/rag-eval.yml'
+  pull_request:
+    paths:
+      - 'laby-module-ai/**'
+      - '.github/workflows/rag-eval.yml'
+
+jobs:
+  rag-eval:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Run offline RAG golden eval + CI gate
+        run: >
+          mvn -B -pl laby-module-ai test
+          "-Dtest=AiRagEvalRunnerTest,RecallDiagnosticsConverterTest,*Retrieval*,*Rrf*,*QueryIntent*,*Sparse*"
+
+      - name: Upload eval report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rag-eval-report
+          path: laby-module-ai/target/eval-reports/
+          if-no-files-found: ignore

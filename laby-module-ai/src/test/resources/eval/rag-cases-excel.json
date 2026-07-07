@@ -1,0 +1,44 @@
+[
+  {
+    "caseId": "excel-001",
+    "description": "Sheet1 中张三工资查询",
+    "query": "Sheet1 中张三的工资是多少",
+    "topK": 5,
+    "segments": [
+      {"id": 6001, "content": "Sheet1 | 姓名 | 部门 | 工资\n张三 | 研发部 | 15000"},
+      {"id": 6002, "content": "Sheet1 | 姓名 | 部门 | 工资\n李四 | 市场部 | 12000"},
+      {"id": 6003, "content": "Sheet2 汇总：研发部平均工资 14500"}
+    ],
+    "expectation": {
+      "expectedSegmentIds": [6001],
+      "expectedContentContains": ["张三", "15000"]
+    }
+  },
+  {
+    "caseId": "excel-002",
+    "description": "表格列概览查询",
+    "query": "工资表有哪些列",
+    "topK": 5,
+    "segments": [
+      {"id": 6004, "content": "Sheet1 表头：姓名、部门、工资、入职日期"},
+      {"id": 6005, "content": "Sheet1 | 王五 | 财务部 | 11000 | 2023-01-15"}
+    ],
+    "expectation": {
+      "expectedContentContains": ["姓名", "工资"]
+    }
+  },
+  {
+    "caseId": "excel-003",
+    "description": "跨 Sheet 汇总查询",
+    "query": "研发部平均工资",
+    "topK": 5,
+    "segments": [
+      {"id": 6006, "content": "Sheet2 汇总：研发部平均工资 14500，市场部 11800"},
+      {"id": 6007, "content": "Sheet1 | 赵六 | 研发部 | 16000"}
+    ],
+    "expectation": {
+      "expectedSegmentIds": [6006],
+      "expectedContentContains": ["研发部", "14500"]
+    }
+  }
+]

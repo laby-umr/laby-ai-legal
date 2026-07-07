@@ -1,0 +1,2 @@
+com.laby.framework.redis.config.LabyRedisAutoConfiguration
+com.laby.framework.redis.config.LabyCacheAutoConfiguration

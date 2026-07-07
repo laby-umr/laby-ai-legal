@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <parent>
+
+        <groupId>com.laby</groupId>
+
+        <artifactId>laby-ai-legal</artifactId>
+
+        <version>${revision}</version>
+
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <packaging>jar</packaging>
+
+    <artifactId>laby-module-ai</artifactId>
+
+
+
+    <name>${project.artifactId}</name>
+
+    <description>
+
+        ai 模块下，接入 LLM 大模型，支持聊天、绘图、音乐、写作、思维导图等功能。
+
+        目前已接入各种模型，不限于：
+
+          国内：通义千问、文心一言、讯飞星火、智谱 GLM、DeepSeek
+
+          国外：OpenAI、Ollama、Midjourney、StableDiffusion、Suno
+
+    </description>
+
+    <properties>
+
+        <tinyflow.version>1.2.6</tinyflow.version>
+
+        <agentscope.version>2.0.0-RC1</agentscope.version>
+
+        <qdrant.version>1.13.0</qdrant.version>
+
+    </properties>
+
+
+
+    <dependencies>
+
+        <dependency>
+
+            <groupId>com.laby</groupId>
+
+            <artifactId>laby-module-system</artifactId>
+
+            <version>${revision}</version>
+
+        </dependency>
+
+        <dependency>
+
+            <groupId>com.laby</groupId>
+
+            <artifactId>laby-module-infra</artifactId>
+
+            <version>${revision}</version>
+
+        </dependency>
+
+
+
+        <!-- 业务组件 -->
+
+
+
+        <dependency>
+
+            <groupId>com.laby</groupId>
+
+            <artifactId>laby-spring-boot-starter-biz-tenant</artifactId>
+
+        </dependency>
+
+
+
+        <!-- Web 相关 -->
+
+        <dependency>
+
+            <groupId>com.laby</groupId>
+
+            <artifactId>laby-spring-boot-starter-security</artifactId>
+
+        </dependency>
+
+        <dependency>
+
+            <groupId>org.springframework.boot</groupId>
+
+            <artifactId>spring-boot-starter-webflux</artifactId>
+
+        </dependency>
+
+
+
+        <!-- DB 相关 -->
+
+        <dependency>
+
+            <groupId>com.laby</groupId>
+
+            <artifactId>laby-spring-boot-starter-mybatis</artifactId>
+
+        </dependency>
+
+
+
+        <!-- Job 相关 -->
+
+        <dependency>
+
+            <groupId>com.laby</groupId>
+
+            <artifactId>laby-spring-boot-starter-job</artifactId>
+
+        </dependency>
+
+        <dependency>
+            <groupId>com.laby</groupId>
+            <artifactId>laby-spring-boot-starter-protection</artifactId>
+        </dependency>
+
+        <!-- Test 测试相关 -->
+
+        <dependency>
+
+            <groupId>com.laby</groupId>
+
+            <artifactId>laby-spring-boot-starter-test</artifactId>
+
+        </dependency>
+
+
+
+        <!-- 工具类相关 -->
+
+        <dependency>
+
+            <groupId>com.laby</groupId>
+
+            <artifactId>laby-spring-boot-starter-excel</artifactId>
+
+        </dependency>
+
+
+
+        <!-- Qdrant 向量库客户端（直连，替代 spring-ai-qdrant-store） -->
+
+        <dependency>
+
+            <groupId>io.qdrant</groupId>
+
+            <artifactId>client</artifactId>
+
+            <version>${qdrant.version}</version>
+
+        </dependency>
+
+
+
+        <!-- HTML 结构化解析 -->
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+        </dependency>
+
+        <!-- 电子表格解析（xlsx/xls） -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>5.2.5</version>
+        </dependency>
+
+        <!-- Tika：负责文件类型识别与内容解析（替代 spring-ai-tika-document-reader） -->
+
+        <dependency>
+
+            <groupId>org.apache.tika</groupId>
+
+            <artifactId>tika-core</artifactId>
+
+        </dependency>
+
+        <dependency>
+
+            <groupId>org.apache.tika</groupId>
+
+            <artifactId>tika-parsers-standard-package</artifactId>
+
+            <version>3.3.0</version>
+
+        </dependency>
+
+
+
+        <!-- AgentScope Java 2.x -->
+
+        <dependency>
+
+            <groupId>io.agentscope</groupId>
+
+            <artifactId>agentscope-harness</artifactId>
+
+        </dependency>
+
+
+
+        <!-- TinyFlow：AI 工作流 -->
+
+        <dependency>
+
+            <groupId>dev.tinyflow</groupId>
+
+            <artifactId>tinyflow-java-core</artifactId>
+
+            <version>${tinyflow.version}</version>
+
+            <exclusions>
+
+                <exclusion>
+
+                    <groupId>com.jfinal</groupId>
+
+                    <artifactId>enjoy</artifactId>
+
+                </exclusion>
+
+                <exclusion>
+
+                    <!-- 解决 https://gitee.com/zhijiantianya/ruoyi-vue-pro/pulls/1318/ 问题 -->
+
+                    <groupId>com.agentsflex</groupId>
+
+                    <artifactId>agents-flex-store-elasticsearch</artifactId>
+
+                </exclusion>
+
+                <exclusion>
+
+                    <!-- 解决 https://t.zsxq.com/pCBZC 问题 -->
+
+                    <groupId>com.agentsflex</groupId>
+
+                    <artifactId>agents-flex-search-engine-es</artifactId>
+
+                </exclusion>
+
+                <exclusion>
+
+                    <!-- TODO @芋艿：暂时移除 groovy，和 iot 冲突 -->
+
+                    <groupId>org.codehaus.groovy</groupId>
+
+                    <artifactId>groovy-all</artifactId>
+
+                </exclusion>
+
+                <!-- 解决和 logback 的日志冲突 -->
+
+                <exclusion>
+
+                    <groupId>org.slf4j</groupId>
+
+                    <artifactId>slf4j-simple</artifactId>
+
+                </exclusion>
+
+                <exclusion>
+
+                    <groupId>org.apache.logging.log4j</groupId>
+
+                    <artifactId>log4j-slf4j-impl</artifactId>
+
+                </exclusion>
+
+                <exclusion>
+
+                    <groupId>org.slf4j</groupId>
+
+                    <artifactId>slf4j-reload4j</artifactId>
+
+                </exclusion>
+
+            </exclusions>
+
+        </dependency>
+
+    </dependencies>
+
+
+
+</project>
+

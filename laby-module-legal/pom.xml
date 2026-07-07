@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>com.laby</groupId>
+        <artifactId>laby-ai-legal</artifactId>
+        <version>${revision}</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>laby-module-legal</artifactId>
+    <packaging>jar</packaging>
+
+    <name>${project.artifactId}</name>
+    <description>法务合同审核：合同解析、AI 审核意见、BPM 流程编排</description>
+
+    <dependencies>
+        <!-- 业务模块（顺序：infra → system 由模块自身传递） -->
+        <dependency>
+            <groupId>com.laby</groupId>
+            <artifactId>laby-module-system</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.laby</groupId>
+            <artifactId>laby-module-infra</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.laby</groupId>
+            <artifactId>laby-module-bpm</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.laby</groupId>
+            <artifactId>laby-module-ai</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <!-- AgentScope Java 2.x（法务 Agent） -->
+        <dependency>
+            <groupId>io.agentscope</groupId>
+            <artifactId>agentscope-harness</artifactId>
+        </dependency>
+
+        <!-- 显式依赖 framework，避免 IDEA 仅打开子模块时无法解析 CommonResult / BaseDO 等 -->
+        <dependency>
+            <groupId>com.laby</groupId>
+            <artifactId>laby-common</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.laby</groupId>
+            <artifactId>laby-spring-boot-starter-biz-data-permission</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.laby</groupId>
+            <artifactId>laby-spring-boot-starter-biz-tenant</artifactId>
+        </dependency>
+
+        <!-- Web 相关 -->
+        <dependency>
+            <groupId>com.laby</groupId>
+            <artifactId>laby-spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.laby</groupId>
+            <artifactId>laby-spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <!-- DB 相关 -->
+        <dependency>
+            <groupId>com.laby</groupId>
+            <artifactId>laby-spring-boot-starter-mybatis</artifactId>
+        </dependency>
+
+        <!-- Flowable（BPM 委托类 JavaDelegate） -->
+        <dependency>
+            <groupId>org.flowable</groupId>
+            <artifactId>flowable-spring-boot-starter-process</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.laby</groupId>
+            <artifactId>laby-spring-boot-starter-protection</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.laby</groupId>
+            <artifactId>laby-spring-boot-starter-mq</artifactId>
+        </dependency>
+
+        <!-- Test -->
+        <dependency>
+            <groupId>com.laby</groupId>
+            <artifactId>laby-spring-boot-starter-test</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.laby</groupId>
+            <artifactId>laby-spring-boot-starter-excel</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>5.2.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+            <version>3.0.3</version>
+        </dependency>
+    </dependencies>
+</project>

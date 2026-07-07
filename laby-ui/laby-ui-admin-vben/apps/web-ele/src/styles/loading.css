@@ -1,0 +1,21 @@
+/* Element Plus v-loading / ElLoading.service */
+.el-loading-spinner .circular {
+  display: none;
+}
+
+.el-loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0;
+}
+
+.el-loading-spinner::before {
+  display: block;
+  width: 160px;
+  height: 160px;
+  content: '';
+  background: url('/loding.gif') no-repeat center;
+  background-size: contain;
+}
