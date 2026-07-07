@@ -2,15 +2,7 @@
 name: Legal Playbook Eval
 
 on:
-  push:
-    branches: [ master, main ]
-    paths:
-      - 'laby-module-legal/**'
-      - '.github/workflows/legal-eval.yml'
-  pull_request:
-    paths:
-      - 'laby-module-legal/**'
-      - '.github/workflows/legal-eval.yml'
+  workflow_dispatch:
 
 jobs:
   playbook-eval:
