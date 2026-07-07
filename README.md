@@ -25,6 +25,20 @@
 
 更多说明与可编辑源文件见 [docs/delivery/architecture/](docs/delivery/architecture/README.md)。
 
+## 系统截图
+
+| 登录 | 看板 | 合同列表 |
+|:---:|:---:|:---:|
+| ![登录](.image/common/登录.png) | ![看板](.image/common/看板.png) | ![合同](.image/common/合同.png) |
+
+| 合同详情 | 合同分类 | 知识库 |
+|:---:|:---:|:---:|
+| ![合同详情](.image/common/合同-详情.png) | ![合同分类](.image/common/合同分类.png) | ![知识库](.image/common/知识库.png) |
+
+| AI对话 | 测评 | 检查 |
+|:---:|:---:|:---:|
+| ![AI对话](.image/common/AI对话.png) | ![测评](.image/common/测评.png) | ![检查](.image/common/检查.png) |
+
 ## 核心能力
 
 ### 法务合同（`laby-module-legal`）
