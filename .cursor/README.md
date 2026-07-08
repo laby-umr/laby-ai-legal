@@ -153,5 +153,6 @@ mvn -pl {module} test
 
 ## 相关文档
 
+- **体系长文（对外分享）：** [docs/delivery/2026-07-08-cursor-ai-collaboration-system.md](../docs/delivery/2026-07-08-cursor-ai-collaboration-system.md)
 - 交付索引：[docs/delivery/README.md](../docs/delivery/README.md)
 - 项目 README：[README.md](../README.md)

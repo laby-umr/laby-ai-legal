@@ -41,6 +41,7 @@ script/docker/                # 统一 docker-compose.yml
 
 | 文档 | 编号 | 说明 |
 |------|------|------|
+| [**Cursor AI 协作体系实践**](./2026-07-08-cursor-ai-collaboration-system.md) | Laby-DEV-CURSOR-001 | Rules/Skills/Hooks/MCP 分层、验证闭环、团队上手与预期收益 |
 | [**AgentScope 2 Java 落地与学习指南**](./2026-06-13-agentscope-java-learning-guide.md) | Laby-AI-AGENTSCOPE-GUIDE-001 | AgentScope 架构、双路径、Tool/Middleware/Session、学习路线 |
 | [架构设计说明书](./2026-06-03-legal-contract-architecture-design.md) | Laby-Legal-ARCH-001 | C4 架构、模块/数据/AI/BPM/部署、ADR（文字版，配图见上） |
 | [系统设计说明书](./2026-06-03-legal-contract-system-design.md) | Laby-Legal-SDD-001 | 模块、流程时序、状态机、表结构、API、验收清单 |
