@@ -4,11 +4,14 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/laby-umr/laby-ai-legal">
+    <img src="https://img.shields.io/github/stars/laby-umr/laby-ai-legal?style=social" alt="GitHub stars" />
+  </a>
   <img src="https://img.shields.io/badge/Java-17-orange" alt="Java 17" />
   <img src="https://img.shields.io/badge/Spring%20Boot-3.5-blue" alt="Spring Boot 3.5" />
   <img src="https://img.shields.io/badge/Vue-3-42b883" alt="Vue 3" />
   <img src="https://img.shields.io/badge/AgentScope-2-purple" alt="AgentScope 2" />
-  <img src="https://img.shields.io/github/license/YunaiV/ruoyi-vue-pro" alt="MIT License" />
+  <img src="https://img.shields.io/github/license/laby-umr/laby-ai-legal" alt="MIT License" />
 </p>
 
 ---
@@ -88,7 +91,7 @@ laby-ai-legal/
 ├── laby-module-system/       # 系统管理
 ├── laby-module-infra/        # 基础设施
 ├── laby-ui/laby-ui-admin-vben/   # 管理端前端（web-ele）
-├── sql/mysql/                # 数据库脚本
+├── sql/mysql/                # 数据库脚本（本地维护，未纳入公开仓库）
 ├── script/docker/            # Docker 统一部署
 └── docs/
     ├── delivery/             # 架构设计、系统设计、架构图
@@ -108,7 +111,7 @@ laby-ai-legal/
 ### 1. 克隆仓库
 
 ```bash
-git clone https://github.com/<your-org>/laby-ai-legal.git
+git clone https://github.com/laby-umr/laby-ai-legal.git
 cd laby-ai-legal
 ```
 
@@ -129,7 +132,9 @@ docker compose --env-file docker.env up -d onlyoffice
 
 ### 3. 初始化数据库
 
-在 MySQL（默认 `laby-system` / `123456`）中**按顺序**执行：
+在 MySQL（默认 `laby-system` / `123456`）中**按顺序**执行初始化脚本。
+
+基础库表可从上游 [ruoyi-vue-pro/sql/mysql](https://github.com/YunaiV/ruoyi-vue-pro/tree/master/sql/mysql) 获取；法务与 AI 知识库增量脚本（`laby-init.sql`）因含环境配置**未纳入本公开仓库**，请向项目维护者获取。若本地已有 `sql/mysql/` 目录，执行顺序为：
 
 ```
 sql/mysql/ruoyi-vue-pro.sql
