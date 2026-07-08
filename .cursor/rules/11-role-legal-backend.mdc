@@ -1,0 +1,15 @@
+---
+description: 法务后端路径 — 主角色 legal-backend
+globs: laby-module-legal/**
+alwaysApply: false
+---
+
+# 路径路由 · 法务后端
+
+当前改动在 `laby-module-legal/**`，主角色为 **legal-backend**。
+
+1. 先读 `.cursor/skills/laby-role/SKILL.md` → **角色：legal-backend**
+2. 叠加 `.cursor/skills/laby-global/SKILL.md` + `.cursor/skills/laby-project/SKILL.md`
+3. 若为新功能/修 Bug，先读 `.cursor/skills/laby-workflow/SKILL.md`
+
+验证参考：Smoke `GET /admin-api/legal/contract/page`；E2E 上传→解析→审核。

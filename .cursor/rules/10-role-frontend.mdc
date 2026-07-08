@@ -1,0 +1,15 @@
+---
+description: 前端路径 — 主角色 frontend
+globs: laby-ui/**
+alwaysApply: false
+---
+
+# 路径路由 · 前端
+
+当前改动在 `laby-ui/**`，主角色为 **frontend**。
+
+1. 先读 `.cursor/skills/laby-role/SKILL.md` → **角色：frontend**
+2. 叠加 `.cursor/skills/laby-global/SKILL.md` + `.cursor/skills/laby-project/SKILL.md`
+3. 若为新功能/修 Bug，先读 `.cursor/skills/laby-workflow/SKILL.md`
+
+跨模块时：前端为主，次模块检查项见 laby-role「角色协作」表。

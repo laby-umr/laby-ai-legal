@@ -1,5 +1,7 @@
 # Laby Skills — 四类体系
 
+**Rules（路由）**：`.cursor/rules/` — 薄层，只告诉 Agent **按什么顺序读哪些 Skill**；规范正文仍在下方 4 个 Skill 中。
+
 本目录 **仅 4 个 Skill**，按性质分组，避免碎片化。
 
 ```

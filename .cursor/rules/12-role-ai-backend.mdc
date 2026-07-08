@@ -1,0 +1,15 @@
+---
+description: AI 后端路径 — 主角色 ai-backend
+globs: laby-module-ai/**
+alwaysApply: false
+---
+
+# 路径路由 · AI 后端
+
+当前改动在 `laby-module-ai/**`，主角色为 **ai-backend**。
+
+1. 先读 `.cursor/skills/laby-role/SKILL.md` → **角色：ai-backend**
+2. 叠加 `.cursor/skills/laby-global/SKILL.md` + `.cursor/skills/laby-project/SKILL.md`
+3. 若为新功能/修 Bug，先读 `.cursor/skills/laby-workflow/SKILL.md`
+
+验证参考：Smoke 知识库分页；E2E 文档上传→分段→召回。

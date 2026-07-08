@@ -1,0 +1,38 @@
+---
+description: laby-ai-legal 开发路由 — 按层读取 Skills（workflow → global → project → role）
+alwaysApply: true
+---
+
+# 开发路由（薄规则 · 只指路）
+
+改代码前按顺序读取 Skills，**不要在这里重复规范正文**：
+
+| 顺序 | Skill | 路径 |
+|------|-------|------|
+| 1 | 整体流程 | `.cursor/skills/laby-workflow/SKILL.md` |
+| 2 | 全局规范（必遵） | `.cursor/skills/laby-global/SKILL.md` |
+| 3 | 项目接法 | `.cursor/skills/laby-project/SKILL.md` |
+| 4 | 业务角色（选一个） | `.cursor/skills/laby-role/SKILL.md` |
+
+## 任务类型
+
+| 类型 | 读哪些 |
+|------|--------|
+| 新功能 / 重构 | workflow 全链路 + global + project + role |
+| 修 Bug | workflow Hotfix + global + project + role |
+| 纯问答 / 只读 | 按需 project / role；无改代码可不读 workflow |
+
+## 优先级
+
+```
+用户指令 > laby-global > laby-project / laby-role > Superpowers 默认
+```
+
+## 硬门禁（摘要）
+
+- 未明确要求：**不 git commit / 不 push**
+- **不提交** `sql/` 目录与任何密钥、token
+- 含中文源码：**禁止** Shell 批量改写（见 laby-global §6）
+- API 变更：按 workflow 更新 Postman + 冒烟
+
+详细规范、验证清单、Smoke/E2E 步骤均在对应 Skill 中。

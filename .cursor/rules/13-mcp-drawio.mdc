@@ -1,0 +1,16 @@
+---
+description: 架构图任务 — 使用 drawio MCP
+globs: docs/delivery/architecture/**
+alwaysApply: false
+---
+
+# MCP 路由 · 架构图
+
+编辑或生成架构图时：
+
+1. MCP 配置见 `.cursor/mcp.json`（`drawio`）
+2. 提示词与源文件见 `docs/delivery/architecture/laby-admin-drawio-prompts.md`
+3. 调用 MCP 工具前**先读 tool schema**
+4. 交付 PNG 放 `docs/delivery/`；可编辑源为 `.drawio`
+
+不要引入其它 diagram 工具链（tldraw、lanshu 等已移除）。
