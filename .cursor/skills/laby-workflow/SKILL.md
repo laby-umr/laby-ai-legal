@@ -113,6 +113,21 @@ docs/superpowers/scripts/{feature}-smoke.ps1     # 本需求
 
 **与 Smoke：** Smoke = 单接口可达；E2E = 多步业务闭环。
 
+### 前端页面 E2E（Browser MCP）
+
+改 `laby-ui/**` 且涉及主流程时，API Smoke 通过后：
+
+1. 启动 `pnpm dev`（5777）+ 后端（48080）
+2. 用 **Cursor Browser MCP**：navigate → snapshot → 点击/填表 → screenshot
+3. 核对 Plan 中 `## E2E Checklist` 每一项
+
+| 模块 | 建议路径 |
+|------|----------|
+| legal | 登录 → 合同列表 → 审核页 →（可选）OnlyOffice |
+| ai | 知识库列表 → 文档上传 → 分段/召回 |
+
+路由规则：`.cursor/rules/14-mcp-browser.mdc`
+
 在 Plan 或 Spec 写 `## E2E Checklist`：
 
 ```markdown
@@ -128,7 +143,7 @@ docs/superpowers/scripts/{feature}-smoke.ps1     # 本需求
 
 ## §Postman
 
-**文件：**
+**文件（Git 主源）：**
 
 ```
 docs/postman/laby-admin.postman_collection.json
@@ -139,7 +154,8 @@ docs/postman/README.md
 **API 变更后必做：**
 
 1. 更新 Collection（Folder 按 Legal/AI/System）
-2. 告知用户 **Re-Import**（Postman 不自动跟 Git）：
+2. **Postman MCP**（可选）：云端查 Collection、跑请求验证 — 见 `.cursor/rules/15-mcp-postman.mdc`；需 `POSTMAN_API_KEY`
+3. 告知用户 **Re-Import**（Postman 不自动跟 Git）：
 
 ```
 Postman → Import → docs/postman/laby-admin.postman_collection.json

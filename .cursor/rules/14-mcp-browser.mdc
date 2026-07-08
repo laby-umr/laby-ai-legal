@@ -1,0 +1,30 @@
+---
+description: 前端 E2E — 使用 Cursor Browser MCP 验证页面
+globs: laby-ui/**
+alwaysApply: false
+---
+
+# Browser MCP · 前端 E2E
+
+改 `laby-ui/**` 且涉及页面流程时，在 **Smoke（API）之后** 用 Browser MCP 做 E2E：
+
+1. 确认前端已启动：`http://localhost:5777`（`pnpm dev` in `laby-ui/laby-ui-admin-vben`）
+2. 确认后端已启动：`http://127.0.0.1:48080`
+3. Browser 工具：`browser_navigate` → `browser_snapshot` → 交互 → `browser_take_screenshot`
+4. 检查 console 无 error；关键路径截图留证
+
+## 推荐验证路径（legal）
+
+| 路径 | 检查点 |
+|------|--------|
+| 登录 | 管理员可进入首页 |
+| 法务 → 合同列表 | 分页、新建入口 |
+| 合同审核页 | 上传/解析/AI 进度 |
+| OnlyOffice 审阅 | `api.js` 加载（8088 DS 已启） |
+
+## 与 workflow 关系
+
+- **Smoke** = 单 API 可达（`docs/superpowers/scripts/*-smoke.ps1`）
+- **Browser E2E** = 多步 UI 闭环（Plan 里写 `## E2E Checklist`）
+
+详见 `.cursor/skills/laby-workflow/SKILL.md` §E2E。

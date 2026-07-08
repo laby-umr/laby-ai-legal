@@ -1,66 +1,95 @@
 # Laby Skills — 四类体系
 
-**Rules（路由）**：`.cursor/rules/` — 薄层，只告诉 Agent **按什么顺序读哪些 Skill**；规范正文仍在下方 4 个 Skill 中。
+> **总流程入口**：[`.cursor/README.md`](../README.md)（Rules / Hooks / MCP / 验证闭环）
 
-本目录 **仅 4 个 Skill**，按性质分组，避免碎片化。
+本目录存放 **规范与流程正文**。Rules 只负责路由到这里，**不要**在 Rules 里重复以下内容。
+
+---
+
+## 四个 Skill
 
 ```
 .cursor/skills/
-├── laby-global/      ① 全局规范（FQN、SQL/utf8mb4、Shell 禁止乱码改源码、Git 提交…）
-├── laby-project/     ② 本项目 laby-admin（模块、接法、文档路径）
-├── laby-role/        ③ 业务角色（legal / ai / frontend）
-└── laby-workflow/    ④ 外部流程（Superpowers + 冒烟/E2E/Postman）
+├── laby-workflow/    ④ 整体流程（Superpowers + 冒烟/E2E/Postman）
+├── laby-global/      ① 全局规范（FQN、SQL/utf8mb4、Shell 禁止乱码改源码、Git…）
+├── laby-project/     ② 本项目 laby-ai-legal（模块、接法、文档路径）
+└── laby-role/        ③ 业务角色（legal / ai / frontend）
 ```
+
+| Skill | 文件 | 何时读 |
+|-------|------|--------|
+| workflow | [laby-workflow/SKILL.md](laby-workflow/SKILL.md) | 新功能、大改、修 Bug（有代码变更） |
+| global | [laby-global/SKILL.md](laby-global/SKILL.md) | **写 Java/SQL/Vue 必遵** |
+| project | [laby-project/SKILL.md](laby-project/SKILL.md) | 任何本仓库改动 |
+| role | [laby-role/SKILL.md](laby-role/SKILL.md) | 按主改动模块选一个角色 |
+
+---
 
 ## 怎么用
 
-| 场景 | 读哪些 Skill |
-|------|----------------|
-| 新功能 / 大改 | `laby-workflow` → Superpowers → 编码时 **global + project + role** |
-| 修 Bug | `laby-workflow` Hotfix → **global + project + role** |
-| 只写代码 | **global**（强制）+ **project** + **role**（按模块） |
-| 纯问答 | 按需 **project** / **role**，无改代码可不读 workflow |
+| 场景 | 读哪些 |
+|------|--------|
+| 新功能 / 大改 | workflow → Superpowers → **global + project + role** |
+| 修 Bug | workflow Hotfix → **global + project + role** |
+| 只写代码 | **global** + **project** + **role** |
+| 纯问答 | 按需 project / role；无改代码可不读 workflow |
+| 跨模块 / >3 文件 | 先 Plan Mode，再按上表 |
 
-## 优先级
+**叠加顺序：**
 
 ```
-用户指令 > laby-global > laby-project / laby-role > Superpowers 默认
+用户指令 → laby-global → laby-project → laby-role（选中章节）
 ```
 
-- **global**：换项目也能用的团队规范  
-- **project**：只有 laby-admin 才有的结构和技术接法  
-- **role**：同一项目里不同业务线的开发视角  
-- **workflow**：不碰 Superpowers 本体，只定义衔接与交付门禁  
+---
 
-## 外部插件（不在本目录）
+## 与 Rules / Hooks / MCP 的关系
 
-Superpowers 自带，通过 Cursor 插件加载：
+| 机制 | 路径 | 职责 |
+|------|------|------|
+| Rules | `.cursor/rules/` | 薄路由（glob 触发读哪个 role / MCP） |
+| **Skills（本目录）** | `.cursor/skills/` | 规范与流程 **唯一正文** |
+| Hooks | `.cursor/hooks.json` | commit 前 FQN、禁止 `sql/` |
+| MCP drawio | `.cursor/mcp.json` | 架构图 |
+| MCP postman | `.cursor/mcp.json` + `POSTMAN_API_KEY` | API 云端验证；Git 主源见 `docs/postman/` |
+| MCP Browser | Cursor 内置 | 前端 E2E（见 `rules/14-mcp-browser.mdc`） |
+
+---
+
+## 角色速查（laby-role）
+
+| 主改动路径 | 角色 |
+|------------|------|
+| `laby-module-legal/**` | legal-backend |
+| `laby-module-ai/**` | ai-backend |
+| `laby-ui/**` | frontend |
+
+---
+
+## 外部插件（Superpowers）
+
+通过 `.cursor/settings.json` 加载，workflow 说明如何衔接：
 
 - `brainstorming` → `writing-plans` → `executing-plans` → `finishing-a-development-branch`
 - `systematic-debugging`（Hotfix）
-- `verification-before-completion`、`using-git-worktrees` 等
+- `verification-before-completion`、`using-git-worktrees`
 
-详见 **`laby-workflow/SKILL.md`**。
+---
 
 ## 配套资产（非 Skill）
 
 | 路径 | 用途 |
 |------|------|
-| `docs/postman/` | Postman Collection / Environment |
-| `docs/superpowers/scripts/` | 冒烟脚本 |
-| `docs/superpowers/specs|plans/` | Spec / Plan |
+| `docs/superpowers/specs/` | 需求 Spec |
+| `docs/superpowers/plans/` | 实施 Plan |
+| `docs/superpowers/scripts/` | Smoke、FQN（`check-fqn.ps1`） |
+| `docs/postman/` | Postman Collection |
 
-## 角色速查
+---
 
-| 改动 | 角色（laby-role） |
-|------|-------------------|
-| `laby-module-legal/**` | legal-backend |
-| `laby-module-ai/**` | ai-backend |
-| `laby-ui/**` | frontend |
+## 扩展方式
 
-## 后续可扩展
-
-- 新 **角色**：在 `laby-role/SKILL.md` 加一章（如 `infra-backend`），不新建目录  
-- 新 **全局规范**：写入 `laby-global/reference.md`  
-- 新 **项目接法**：写入 `laby-project/reference.md`  
-- CI 门禁：`.github/workflows/code-quality-gate.yml`（FQN 检查）；`baseline-smoke.ps1` 仍须本地 laby-server
+- 新 **角色**：在 `laby-role/SKILL.md` 加一章，不新建目录
+- 新 **全局规范**：`laby-global/reference.md`
+- 新 **项目接法**：`laby-project/reference.md`
+- 新 **领域 Skill**（可选）：如 onlyoffice / rag，在 role 里加链接

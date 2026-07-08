@@ -3,6 +3,13 @@
     "drawio": {
       "command": "npx",
       "args": ["-y", "@next-ai-drawio/mcp-server@latest"]
+    },
+    "postman": {
+      "command": "npx",
+      "args": ["-y", "@postman/postman-mcp-server"],
+      "env": {
+        "POSTMAN_API_KEY": "${env:POSTMAN_API_KEY}"
+      }
     }
   }
 }

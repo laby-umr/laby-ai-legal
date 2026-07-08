@@ -1,0 +1,44 @@
+---
+description: Postman MCP — API 变更时同步 Collection 与云端验证
+globs: docs/postman/**
+alwaysApply: false
+---
+
+# MCP · Postman
+
+## 双轨原则
+
+| 轨道 | 位置 | 职责 |
+|------|------|------|
+| **Git（主）** | `docs/postman/laby-admin.postman_collection.json` | 版本化、随 PR 提交、团队 Import |
+| **Postman MCP（辅）** | Postman 云端 API | 运行请求、查 Workspace/Collection、可选云端同步 |
+
+**API 有变更时：先改 Git 里的 JSON，再用 MCP 验证或同步云端。**
+
+## 前置
+
+1. `.cursor/mcp.json` 已配置 `postman`（`@postman/postman-mcp-server`）
+2. 设置环境变量 `POSTMAN_API_KEY`（[Postman → Settings → API Keys](https://go.postman.co/settings/me/api-keys)）
+3. 重启 Cursor → Settings → MCP → 确认 **postman** Connected
+4. 调用 MCP 工具前**先读 tool schema**
+
+## Agent 工作流（API 变更）
+
+1. 更新 Controller / VO → 同步 `docs/postman/laby-admin.postman_collection.json`
+2. 新接口按 Folder 归类：`Legal` / `AI` / `System`
+3. 用 Postman MCP 在云端查找/运行对应 Collection（若已上传）
+4. 告知用户本地 **Re-Import** Collection（Postman 不自动跟 Git）
+
+## 本地 Import（人工）
+
+见 [docs/postman/README.md](../../docs/postman/README.md)：
+
+```
+Postman → Import → laby-admin.postman_collection.json
+Environment → laby-admin.postman_environment.local.json
+先跑 _Auth / Login → 再跑新接口
+```
+
+## 与 workflow 关系
+
+详见 `.cursor/skills/laby-workflow/SKILL.md` §Postman。

@@ -21,6 +21,16 @@ alwaysApply: true
 | 新功能 / 重构 | workflow 全链路 + global + project + role |
 | 修 Bug | workflow Hotfix + global + project + role |
 | 纯问答 / 只读 | 按需 project / role；无改代码可不读 workflow |
+| **跨模块 / >3 文件** | 先 **Plan Mode** 产出 Spec/Plan，再 Agent 实现 |
+
+## 自动化门禁
+
+| 机制 | 路径 | 作用 |
+|------|------|------|
+| **Hooks** | `.cursor/hooks.json` | commit 前 FQN 检查；禁止 staging `sql/` |
+| **索引忽略** | `.cursorignore` | 排除 node_modules/target/sql 等大目录 |
+| **Browser MCP** | Cursor 内置 + `14-mcp-browser.mdc` | 前端 E2E 页面验证 |
+| **Postman MCP** | `.cursor/mcp.json` + `15-mcp-postman.mdc` | API 变更后云端验证 / Collection 管理 |
 
 ## 优先级
 

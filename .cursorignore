@@ -1,0 +1,25 @@
+﻿# Cursor 索引忽略 — 加速 Agent 检索，不影响 Git
+
+# 依赖与构建产物
+laby-ui/**/node_modules/
+**/.pnpm-store/
+**/target/
+**/dist/
+**/.turbo/
+laby-ui/**/internal/**/dist/
+
+# 本地 SQL（不提交 GitHub；含示例密钥）
+sql/
+
+# 大二进制 / 媒体
+**/*.jar
+**/*.zip
+**/*.tgz
+.image/**/ai-preview.gif
+
+# Agent 技能包缓存
+.agents/
+
+# 日志与临时
+**/*.log
+**/_generated-*
